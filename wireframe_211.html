@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRS Error Resolution System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        .header {
+            background-color: #003d6b;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1900px;
+            margin: 0 auto;
+            height: calc(100vh - 80px);
+        }
+
+        .left-nav {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            height: fit-content;
+            grid-row: 1 / -1;
+        }
+
+        .center-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            grid-column: 2;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #003d6b;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .btn-primary:hover {
+            background-color: #0052a3;
+            border-color: #0052a3;
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .grid-container {
+            overflow-x: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .work-grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .work-grid th,
+        .work-grid td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .work-grid th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+
+        .work-grid tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .work-grid tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .work-grid tbody tr.selected {
+            background-color: #e3f2fd;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-open {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resolved {
+            background-color: #d1edff;
+            color: #0c5460;
+        }
+
+        .priority-high {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: #fd7e14;
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.9rem;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #dc3545;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+            background: #fafbfc;
+        }
+
+        .form-input:hover,
+        .form-select:hover,
+        .form-textarea:hover {
+            border-color: #adb5bd;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        .checkbox-container {
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .close {
+            color: #6c757d;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.5rem;
+            margin: -0.5rem -0.5rem -0.5rem 0;
+        }
+
+        .close:hover {
+            color: #003d6b;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            align-items: start;
+        }
+
+        .modal-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-right {
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+
+        .modal-right .panel:first-child {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .modal-right .panel:last-child {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .field-item {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .field-item:hover {
+            border-color: #0066cc;
+        }
+
+        .field-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .field-value {
+            color: #212529;
+            font-size: 0.95rem;
+        }
+
+        .link-card {
+            border: 1px solid #0066cc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .link-card:hover {
+            background-color: #f0f8ff;
+            border-color: #0052a3;
+        }
+
+        .error-details {
+            background-color: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .error-title {
+            color: #c53030;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-item {
+            padding: 0.75rem 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            min-width: 200px;
+        }
+
+        .error-item:hover {
+            border-color: #0066cc;
+            background: #f8f9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .error-item.active {
+            border-color: #0066cc;
+            background: #e3f2fd;
+            color: #003d6b;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+
+        .error-item.resolved {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-code {
+            font-weight: 600;
+            color: #dc3545;
+            font-size: 0.95rem;
+        }
+
+        .error-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .panel-header {
+            border-bottom: 2px solid #f1f3f4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin: 0;
+        }
+
+        .sub-panel {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sub-panel-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-section {
+            margin-bottom: 1.5rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .nav-link.active {
+            background-color: #e3f2fd;
+            color: #003d6b;
+            border-left: 4px solid #0066cc;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IRS Error Resolution System</h1>
+    </div>
+
+    <div class="main-container">
+        <div class="left-nav">
+            <div class="nav-section">
+                
+            <div class="nav-section-title">Work Records</div>
+                <a href="#" class="nav-link active" onclick="filterRecords('all')">All Records</a>
+                <a href="#" class="nav-link" onclick="filterRecords('my')">My Records</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Quick Filters</div>
+                <a href="#" class="nav-link" onclick="filterByStatus('open')">Open Items</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('high-priority')">High Priority</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('overdue')">Overdue</a>
+            </div>
+        </div>
+
+        <div class="center-panel">
+            <div class="card-header">
+                <h2 class="card-title">Work Records</h2>
+            </div>
+
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="assignToSelf()">Assign to Self</button>
+                <button class="btn btn-secondary" onclick="assignToOther()">Assign to Other</button>
+                <select class="form-select" style="width: auto;">
+                    <option value="">Filter by Status</option>
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <select class="form-select" style="width: auto;">
+                    <option value="">Filter by Priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <button class="btn" onclick="refreshGrid()">Refresh</button>
+                <div style="margin-left: auto; color: #6c757d;">
+                    Showing 5 of 127 records
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <table class="work-grid">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>DLN</th>
+                            <th>Form Type</th>
+                            <th>Tax Period</th>
+                            <th>Errors</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Received Date</th>
+                            <th>Updated Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="selectRecord(this, '20240123456789012')" data-dln="20240123456789012">
+                            <td><input type="checkbox"></td>
+                            <td>20240123456789012</td>
+                            <td>Form 4868</td>
+                            <td>2023</td>
+                            <td>DLN-001, DLN-005...</td>
+                            <td><span class="priority-high">High</span></td>
+                            <td><span class="status-badge status-open">Open</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-15</td>
+                            <td>2024-08-12</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="editRecord(event, '20240123456789012')">Edit</button></td>
+                        </tr>
+                        <tr onclick="selectRecord(this, '20240234567890123')" data-dln="20240234567890123">
+                            <td><input type="checkbox"></td>
+                            <td>20240234567890123</td>
+                            <td>Form 4868</td>
+                            <td>2023</td>
+                            <td>DLN-003</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                            <td><span class="status-badge status-in-progress">In Progress</span></td>
+                            <td>Thompson, Sarah</td>
+                            <td>2024-03-28</td>
+                            <td>2024-08-14</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="editRecord(event, '20240234567890123')">Edit</button></td>
+                        </tr>
+                        <tr onclick="selectRecord(this, '20240345678901234')" data-dln="20240345678901234">
+                            <td><input type="checkbox"></td>
+                            <td>20240345678901234</td>
+                            <td>Form 4868</td>
+                            <td>2023</td>
+                            <td>DLN-002, DLN-007, DLN-012...</td>
+                            <td><span class="priority-high">High</span></td>
+                            <td><span class="status-badge status-open">Open</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-10</td>
+                            <td>2024-08-13</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="editRecord(event, '20240345678901234')">Edit</button></td>
+                        </tr>
+                        <tr onclick="selectRecord(this, '20240456789012345')" data-dln="20240456789012345">
+                            <td><input type="checkbox"></td>
+                            <td>20240456789012345</td>
+                            <td>Form 4868</td>
+                            <td>2023</td>
+                            <td>DLN-001</td>
+                            <td><span class="priority-low">Low</span></td>
+                            <td><span class="status-badge status-resolved">Resolved</span></td>
+                            <td>Garcia, Maria</td>
+                            <td>2024-04-02</td>
+                            <td>2024-08-10</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="editRecord(event, '20240456789012345')">Edit</button></td>
+                        </tr>
+                        <tr onclick="selectRecord(this, '20240567890123456')" data-dln="20240567890123456">
+                            <td><input type="checkbox"></td>
+                            <td>20240567890123456</td>
+                            <td>Form 4868</td>
+                            <td>2023</td>
+                            <td>DLN-004, DLN-009...</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                            <td><span class="status-badge status-open">Open</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-18</td>
+                            <td>2024-08-11</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="editRecord(event, '20240567890123456')">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Work Record Details Modal -->
+    <div id="workRecordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('workRecordModal')">&times;</span>
+            <div class="modal-header">
+                <h2 class="modal-title">Work Record Details - DLN: <span id="modalDLN"></span></h2>
+            </div>
+            
+            <!-- Error List Section -->
+            <div class="info-section">
+                <div class="info-title">Errors</div>
+                <div id="errorList" class="error-list">
+                    <!-- Errors will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Modal Body with Two Column Layout -->
+            <div class="modal-body">
+                <!-- Left Column - Error Resolution Form -->
+                <div class="modal-left">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Error Resolution Form</h3>
+                        </div>
+                        <div id="errorResolutionForm">
+                            <div class="sub-panel">
+                                <p style="color: #6c757d; font-style: italic; text-align: center; margin: 2rem 0;">Select an error from the list above to view the resolution form</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Split into IRM and RRD sections -->
+                <div class="modal-right">
+                    <!-- Top Section - IRM Guidance -->
+                    <div class="panel" style="margin-bottom: 1rem;">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Internal Revenue Manual (IRM)</h3>
+                        </div>
+                        <div id="modalIRMContent">
+                            <p style="color: #6c757d; font-style: italic;">Select an error to view IRM guidance</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Section - RRD Data -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Form 4868 - Return Data</h3>
+                        </div>
+                        <div id="modalRRDContent">
+                            <p style="color: #6c757d; font-style: italic;">Return data will be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IRM Modal -->
+    <div id="irmModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('irmModal')">&times;</span>
+            <h2>Internal Revenue Manual (IRM)</h2>
+            <div id="irmDetails">
+                <div class="info-section">
+                    <div class="info-title">IRM 3.12.179 - DLN Error Resolution</div>
+                    <p><strong>Section:</strong> Processing Errors and Corrections</p>
+                    <p><strong>Effective Date:</strong> January 1, 2024</p>
+                </div>
+                <div class="error-details">
+                    <div class="error-title">DLN-001: Invalid Document Locator Number Format</div>
+                    <p><strong>Description:</strong> The Document Locator Number (DLN) does not conform to the standard 14-digit format or contains invalid characters.</p>
+                    <p><strong>Resolution Steps:</strong></p>
+                    <ol>
+                        <li>Verify the DLN against the taxpayer's filing records</li>
+                        <li>Check for transposition errors in data entry</li>
+                        <li>Cross-reference with Master File data</li>
+                        <li>If DLN is confirmed invalid, generate corrected DLN</li>
+                        <li>Update all related systems and notify taxpayer if necessary</li>
+                    </ol>
+                    <p><strong>Authority:</strong> IRC Section 6011, Treasury Regulation 301.6011-1</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RRD Modal -->
+    <div id="rrdModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('rrdModal')">&times;</span>
+            <h2>Return Request and Display Application (RRD)</h2>
+            <div id="rrdDetails">
+                <div class="info-section">
+                    <div class="info-title">Taxpayer Return Information</div>
+                    <div class="field-grid">
+                        <div class="field-item">
+                            <div class="field-label">DLN</div>
+                            <div class="field-value">20240123456789012</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Tax Year</div>
+                            <div class="field-value">2023</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Form Type</div>
+                            <div class="field-value">Form 4868 - Extension Request</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Filing Status</div>
+                            <div class="field-value">Single</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Processing Date</div>
+                            <div class="field-value">2024-04-15</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Service Center</div>
+                            <div class="field-value">Atlanta, GA (39)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-title">Error Analysis</div>
+                    <div class="error-details">
+                        <p><strong>Error Type:</strong> DLN Format Validation Failure</p>
+                        <p><strong>System Flag:</strong> The DLN does not match the expected format for 2024 tax year forms</p>
+                        <p><strong>Impact:</strong> Return cannot be properly matched to taxpayer record</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRecord = null;
+        
+        function refreshGrid() {
+            alert('Grid refreshed');
+        }
+        
+        function editRecord(event, dln) {
+            // Prevent row click event from firing
+            event.stopPropagation();
+            
+            // Set selected record
+            selectedRecord = dln;
+            
+            // Open the work record modal directly
+            openWorkRecordModal();
+        }
+        
+        const workRecordData = {
+            '20240123456789012': {
+                taxpayerName: 'Johnson, Michael R',
+                ssn: '***-**-4521',
+                formType: 'Form 4868',
+                taxPeriod: '2023',
+                errors: [
+                    { code: 'DLN-001', description: 'Invalid DLN format detected during processing', status: 'Open' },
+                    { code: 'DLN-005', description: 'Missing extension payment verification', status: 'Open' },
+                    { code: 'DLN-008', description: 'Duplicate filing indicator mismatch', status: 'Review' }
+                ],
+                priority: 'High',
+                status: 'Open',
+                assignedTo: 'Unassigned',
+                receivedDate: '2024-04-15',
+                updatedDate: '2024-08-12',
+                filingDate: '2024-04-15',
+                address: '1234 Main St, Anytown, ST 12345',
+                form4868Data: {
+                    taxpayerName: 'Johnson, Michael R',
+                    ssn: '***-**-4521',
+                    spouseName: '',
+                    spouseSSN: '',
+                    address: '1234 Main St, Anytown, ST 12345',
+                    filingStatus: 'Single',
+                    estimatedTotalTax: '8500.00',
+                    totalPayments: '7200.00',
+                    balanceOwed: '1300.00',
+                    extensionPayment: '1300.00',
+                    checkNumber: '1234',
+                    bankRoutingNumber: '123456789',
+                    bankAccountNumber: '****5678',
+                    electronicWithdrawalDate: '2024-04-15'
+                }
+            },
+            '20240234567890123': {
+                taxpayerName: 'Smith, Jennifer L',
+                ssn: '***-**-7832',
+                formType: 'Form 4868',
+                taxPeriod: '2023',
+                errors: [
+                    { code: 'DLN-003', description: 'Extension payment amount mismatch', status: 'In Progress' }
+                ],
+                priority: 'Medium',
+                status: 'In Progress',
+                assignedTo: 'Thompson, Sarah',
+                receivedDate: '2024-03-28',
+                updatedDate: '2024-08-14',
+                form4868Data: {
+                    taxpayerName: 'Smith, Jennifer L',
+                    ssn: '***-**-7832',
+                    spouseName: 'Smith, David A',
+                    spouseSSN: '***-**-9901',
+                    address: '5678 Oak Ave, Springfield, IL 62701',
+                    filingStatus: 'Married Filing Jointly',
+                    estimatedTotalTax: '12500.00',
+                    totalPayments: '11800.00',
+                    balanceOwed: '700.00',
+                    extensionPayment: '700.00',
+                    checkNumber: '',
+                    bankRoutingNumber: '987654321',
+                    bankAccountNumber: '****1234',
+                    electronicWithdrawalDate: '2024-03-28'
+                }
+            }
+        };
+
+        function selectRecord(row, dln) {
+            // Remove previous selection
+            document.querySelectorAll('.work-grid tbody tr').forEach(r => r.classList.remove('selected'));
+            
+            // Add selection to clicked row
+            row.classList.add('selected');
+            selectedRecord = dln;
+            
+            // Update work record card
+            updateWorkRecordCard(dln);
+            
+            // Update IRM preview
+            updateIRMPreview();
+            
+            // Update RRD preview
+            updateRRDPreview();
+        }
+
+        function updateWorkRecordCard(dln) {
+            const record = workRecordData[dln];
+            if (!record) return;
+
+            const errorText = record.errors.length > 2 ? 
+                `${record.errors[0].code}, ${record.errors[1].code}...` : 
+                record.errors.map(e => e.code).join(', ');
+
+            const html = `
+                <div class="error-details">
+                    <div class="error-title">Errors: ${errorText}</div>
+                    <p>${record.errors[0].description}</p>
+                </div>
+                
+                <div class="field-grid">
+                    <div class="field-item">
+                        <div class="field-label">DLN</div>
+                        <div class="field-value">${dln}</div>
+                    </div>
+                    <div class="field-item">
+                        <div class="field-label">Form Type</div>
+                        <div class="field-value">${record.formType}</div>
+                    </div>
+                    <div class="field-item">
+                        <div class="field-label">Tax Period</div>
+                        <div class="field-value">${record.taxPeriod}</div>
+                    </div>
+                    <div class="field-item">
+                        <div class="field-label">Received Date</div>
+                        <div class="field-value">${record.receivedDate}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="openWorkRecordModal()">View Full Details</button>
+                    <button class="btn btn-secondary" onclick="resolveRecord()">Mark Resolved</button>
+                </div>
+            `;
+            
+            document.getElementById('recordDetails').innerHTML = html;
+        }
+
+        function updateIRMPreview() {
+            if (!selectedRecord) return;
+            
+            const html = `
+                <p><strong>IRM 3.12.179</strong> - DLN Error Resolution</p>
+                <p>Guidance available for error code DLN-001</p>
+                <p style="color: #0066cc; font-weight: 500; margin-top: 0.5rem;">Click to view detailed procedures</p>
+            `;
+            
+            document.getElementById('irmPreview').innerHTML = html;
+        }
+
+        function updateRRDPreview() {
+            if (!selectedRecord) return;
+            
+            const html = `
+                <p><strong>Return Data Available</strong></p>
+                <p>Form 4868 - Extension Request</p>
+                <p>Processing Status: Error Flagged</p>
+                <p style="color: #0066cc; font-weight: 500; margin-top: 0.5rem;">Click to access full return data</p>
+            `;
+            
+            document.getElementById('rrdPreview').innerHTML = html;
+        }
+
+        function openWorkRecordModal() {
+            if (!selectedRecord) return;
+            
+            const record = workRecordData[selectedRecord];
+            if (!record) return;
+            
+            // Set DLN in modal header
+            document.getElementById('modalDLN').textContent = selectedRecord;
+            
+            // Populate error list
+            const errorListHtml = record.errors.map(error => 
+                `<div class="error-item" onclick="selectError('${error.code}', '${selectedRecord}')" data-error="${error.code}">
+                    <div class="error-code">${error.code}</div>
+                    <div class="error-description">${error.description}</div>
+                </div>`
+            ).join('');
+            
+            document.getElementById('errorList').innerHTML = errorListHtml;
+            
+            // Populate RRD data (always visible)
+            populateRRDData(record);
+            
+            // Clear error-specific content
+            document.getElementById('errorResolutionForm').innerHTML = '<p style="color: #6c757d; font-style: italic;">Select an error to view resolution form</p>';
+            document.getElementById('modalIRMContent').innerHTML = '<p style="color: #6c757d; font-style: italic;">Select an error to view IRM guidance</p>';
+            
+            document.getElementById('workRecordModal').style.display = 'block';
+        }
+
+        function selectError(errorCode, dln) {
+            // Remove active class from all error items
+            document.querySelectorAll('.error-item').forEach(item => item.classList.remove('active'));
+            
+            // Add active class to selected error
+            document.querySelector(`[data-error="${errorCode}"]`).classList.add('active');
+            
+            // Populate error resolution form
+            populateErrorResolutionForm(errorCode, dln);
+            
+            // Populate IRM content for this error
+            populateIRMContent(errorCode);
+        }
+
+        function populateErrorResolutionForm(errorCode, dln) {
+            const record = workRecordData[dln];
+            const error = record.errors.find(e => e.code === errorCode);
+            
+            let formHtml = '';
+            
+            switch(errorCode) {
+                case 'DLN-001':
+                    formHtml = `
+                        <div class="sub-panel">
+                            <div class="sub-panel-title">DLN Correction Form</div>
+                            <div class="form-group">
+                                <label class="form-label required">Current DLN</label>
+                                <input type="text" class="form-input" value="${dln}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Corrected DLN</label>
+                                <input type="text" class="form-input" placeholder="Enter corrected DLN format">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Validation Method</label>
+                                <select class="form-select">
+                                    <option value="">Select validation method</option>
+                                    <option value="master_file">Master File Cross-Reference</option>
+                                    <option value="manual_review">Manual Review</option>
+                                    <option value="system_generated">System Generated</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Resolution Notes</label>
+                                <textarea class="form-textarea" placeholder="Document the steps taken to resolve this DLN format issue..."></textarea>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'DLN-005':
+                    formHtml = `
+                        <div class="sub-panel">
+                            <div class="sub-panel-title">Payment Verification Form</div>
+                            <div class="form-group">
+                                <label class="form-label required">Payment Verification Status</label>
+                                <select class="form-select">
+                                    <option value="">Select verification status</option>
+                                    <option value="verified">Payment Verified</option>
+                                    <option value="pending">Verification Pending</option>
+                                    <option value="failed">Verification Failed</option>
+                                    <option value="partial">Partial Payment Verified</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Payment Reference Number</label>
+                                <input type="text" class="form-input" placeholder="Enter payment reference or confirmation number">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Verified Amount</label>
+                                <input type="number" class="form-input" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Resolution Notes</label>
+                                <textarea class="form-textarea" placeholder="Document payment verification process and findings..."></textarea>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'DLN-008':
+                    formHtml = `
+                        <div class="sub-panel">
+                            <div class="sub-panel-title">Duplicate Filing Resolution</div>
+                            <div class="form-group">
+                                <label class="form-label required">Duplicate Filing Action</label>
+                                <select class="form-select">
+                                    <option value="">Select resolution action</option>
+                                    <option value="accept_first">Accept First Filing</option>
+                                    <option value="accept_second">Accept Second Filing</option>
+                                    <option value="merge_filings">Merge Filings</option>
+                                    <option value="reject_duplicate">Reject Duplicate</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Primary DLN</label>
+                                <input type="text" class="form-input" placeholder="Enter the DLN to be retained">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Secondary DLN</label>
+                                <input type="text" class="form-input" placeholder="Enter the duplicate DLN">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Resolution Notes</label>
+                                <textarea class="form-textarea" placeholder="Document the duplicate filing resolution process..."></textarea>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                default:
+                    formHtml = `
+                        <div class="sub-panel">
+                            <div class="sub-panel-title">General Error Resolution</div>
+                            <div class="form-group">
+                                <label class="form-label required">Resolution Notes</label>
+                                <textarea class="form-textarea" placeholder="Enter detailed resolution steps and findings..."></textarea>
+                            </div>
+                        </div>
+                    `;
+            }
+            
+            formHtml += `
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="assignForReview('${errorCode}', '${dln}')">Assign for Review</button>
+                    <button class="btn btn-success" onclick="submitResolution('${errorCode}', '${dln}')">Submit Resolution</button>
+                </div>
+            `;
+            
+            document.getElementById('errorResolutionForm').innerHTML = formHtml;
+        }
+
+        function populateIRMContent(errorCode) {
+            let irmHtml = '';
+            
+            switch(errorCode) {
+                case 'DLN-001':
+                    irmHtml = `
+                        <p><strong>IRM 3.12.179.1</strong> - Invalid DLN Format</p>
+                        <div style="margin-top: 0.75rem;">
+                            <p><strong>Procedure:</strong></p>
+                            <ol style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Verify DLN against Master File</li>
+                                <li>Check for data entry errors</li>
+                                <li>Generate corrected DLN if needed</li>
+                                <li>Update all related systems</li>
+                            </ol>
+                        </div>
+                    `;
+                    break;
+                case 'DLN-005':
+                    irmHtml = `
+                        <p><strong>IRM 3.12.179.5</strong> - Payment Verification</p>
+                        <div style="margin-top: 0.75rem;">
+                            <p><strong>Procedure:</strong></p>
+                            <ol style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Cross-reference payment systems</li>
+                                <li>Verify bank transaction details</li>
+                                <li>Check ACH/EFT processing status</li>
+                                <li>Contact bank if necessary</li>
+                            </ol>
+                        </div>
+                    `;
+                    break;
+                case 'DLN-008':
+                    irmHtml = `
+                        <p><strong>IRM 3.12.179.8</strong> - Duplicate Filing Resolution</p>
+                        <div style="margin-top: 0.75rem;">
+                            <p><strong>Procedure:</strong></p>
+                            <ol style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Compare filing dates and content</li>
+                                <li>Determine primary filing</li>
+                                <li>Mark duplicate as processed</li>
+                                <li>Notify taxpayer if required</li>
+                            </ol>
+                        </div>
+                    `;
+                    break;
+                default:
+                    irmHtml = '<p>No specific IRM guidance available for this error.</p>';
+            }
+            
+            document.getElementById('modalIRMContent').innerHTML = irmHtml;
+        }
+
+        function populateRRDData(record) {
+            const formData = record.form4868Data;
+            
+            const rrdHtml = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Taxpayer Name</label>
+                        <div class="field-value">${formData.taxpayerName}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SSN</label>
+                        <div class="field-value">${formData.ssn}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Spouse Name</label>
+                        <div class="field-value">${formData.spouseName || 'N/A'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Spouse SSN</label>
+                        <div class="field-value">${formData.spouseSSN || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <div class="field-value">${formData.address}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Filing Status</label>
+                        <div class="field-value">${formData.filingStatus}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Total Tax</label>
+                        <div class="field-value">${formData.estimatedTotalTax}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Payments</label>
+                        <div class="field-value">${formData.totalPayments}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Balance Owed</label>
+                        <div class="field-value">${formData.balanceOwed}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Extension Payment</label>
+                        <div class="field-value">${formData.extensionPayment}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Method</label>
+                        <div class="field-value">${formData.checkNumber ? 'Check #' + formData.checkNumber : 'Electronic'}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Bank Routing</label>
+                        <div class="field-value">${formData.bankRoutingNumber}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bank Account</label>
+                        <div class="field-value">${formData.bankAccountNumber}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('modalRRDContent').innerHTML = rrdHtml;
+        }
+
+        function submitResolution(errorCode, dln) {
+            alert(`Resolution submitted for error ${errorCode} on DLN ${dln}`);
+        }
+
+        function assignForReview(errorCode, dln) {
+            const reviewer = prompt('Enter reviewer ID:');
+            if (reviewer) {
+                alert(`Error ${errorCode} assigned to ${reviewer} for review`);
+            }
+        }
+
+        function openIRMCard() {
+            document.getElementById('irmModal').style.display = 'block';
+        }
+
+        function openRRDCard() {
+            document.getElementById('rrdModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function assignToSelf() {
+            const selected = document.querySelectorAll('.work-grid tbody tr.selected');
+            if (selected.length === 0) {
+                alert('Please select at least one work record');
+                return;
+            }
+            alert(`${selected.length} record(s) assigned to current user`);
+        }
+
+        function assignToOther() {
+            const selected = document.querySelectorAll('.work-grid tbody tr.selected');
+            if (selected.length === 0) {
+                alert('Please select at least one work record');
+                return;
+            }
+            const user = prompt('Enter user ID to assign to:');
+            if (user) {
+                alert(`${selected.length} record(s) assigned to ${user}`);
+            }
+        }
+
+        function resolveRecord() {
+            if (!selectedRecord) return;
+            alert('Record marked as resolved');
+        }
+
+        function filterRecords(type) {
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            // Add active class to clicked link
+            event.target.classList.add('active');
+            
+            if (type === 'all') {
+                alert('Showing all records');
+            } else if (type === 'my') {
+                alert('Showing only records assigned to current user');
+            }
+        }
+
+        function filterByStatus(status) {
+            // Remove active class from work records nav links but keep quick filters
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.onclick && link.onclick.toString().includes('filterRecords')) {
+                    link.classList.remove('active');
+                }
+            });
+            
+            alert(`Filtering by ${status} items`);
+        }
+
+        // Handle select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.work-grid tbody input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
