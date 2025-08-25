@@ -146,6 +146,7 @@
         .actions-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             padding: 0.5rem 1.5rem;
             border: 1px solid #3b82f6;
@@ -830,9 +831,11 @@
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Quick Filters</div>
-                <a href="#" class="nav-link" onclick="filterByStatus('open')">Open</a>
-                <a href="#" class="nav-link" onclick="filterByStatus('in-progress')">In Progress</a>
-                <a href="#" class="nav-link" onclick="filterByStatus('in-review')">In Review</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('open')">New</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('in-progress')">Assigned</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('in-review')">QR Review</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('suspended')">Suspended</a>
+                <a href="#" class="nav-link" onclick="filterByStatus('rejected')">Rejected</a>
             </div>
         </div>
 
@@ -870,11 +873,21 @@
                                 </svg>
                                 Assign to me
                             </button>
+                            <button class="actions-menu-item" onclick="assignForQRReview()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                                Assign for QR Review
+                            </button>
                             <button class="actions-menu-item" onclick="approveSelected()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20,6 9,17 4,12"></polyline>
                                 </svg>
-                                Approve
+                                QR Approve
                             </button>
                             <button class="actions-menu-item" onclick="suspendSelected()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -911,9 +924,9 @@
                             <td>ABCD90210</td>
                             <td>00217-102-05701-4</td>
                             <td>Form 4868</td>
-                            <td>2023</td>
+                            <td>2025</td>
                             <td>Error Code 004, Error Code 107</td>
-                            <td><span class="status-badge status-open">Open</span></td>
+                            <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
                             <td>2024-04-15</td>
                             <td>2024-08-12</td>
@@ -923,9 +936,9 @@
                             <td>EFGH34567</td>
                             <td>00218-103-05702-5</td>
                             <td>Form 4868</td>
-                            <td>2023</td>
+                            <td>2025</td>
                             <td>Missing TIN</td>
-                            <td><span class="status-badge status-in-progress">In Progress</span></td>
+                            <td><span class="status-badge status-in-progress">Assigned</span></td>
                             <td>Thompson, Sarah</td>
                             <td>2024-03-28</td>
                             <td>2024-08-14</td>
@@ -935,9 +948,9 @@
                             <td>IJKL78901</td>
                             <td>00219-104-05703-6</td>
                             <td>Form 4868</td>
-                            <td>2023</td>
+                            <td>2025</td>
                             <td>Field 01ED, Error Code 107, Missing TIN</td>
-                            <td><span class="status-badge status-open">Open</span></td>
+                            <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
                             <td>2024-04-10</td>
                             <td>2024-08-13</td>
@@ -947,9 +960,9 @@
                             <td>MNOP12345</td>
                             <td>00220-105-05704-7</td>
                             <td>Form 4868</td>
-                            <td>2023</td>
+                            <td>2025</td>
                             <td>Error Code 004</td>
-                            <td><span class="status-badge status-resolved">Resolved</span></td>
+                            <td><span class="status-badge status-resolved">QR Review</span></td>
                             <td>Garcia, Maria</td>
                             <td>2024-04-02</td>
                             <td>2024-08-10</td>
@@ -959,9 +972,9 @@
                             <td>QRST56789</td>
                             <td>00221-106-05705-8</td>
                             <td>Form 4868</td>
-                            <td>2023</td>
+                            <td>2025</td>
                             <td>Field 01ED, Missing TIN</td>
-                            <td><span class="status-badge status-open">Open</span></td>
+                            <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
                             <td>2024-04-18</td>
                             <td>2024-08-11</td>
@@ -1148,7 +1161,7 @@
                                             <option value="">Select status</option>
                                             <option value="received">Received</option>
                                             <option value="processing">Processing</option>
-                                            <option value="approved">Approved</option>
+                                            <option value="approved">QR Review</option>
                                             <option value="rejected">Rejected</option>
                                         </select>
                                     </div>
@@ -1260,14 +1273,14 @@
                 taxpayerName: 'Johnson, Michael R',
                 ssn: '***-**-4521',
                 formType: 'Form 4868',
-                taxPeriod: '2023',
+                taxPeriod: '2025',
                 errors: [
-                    { code: 'DLN-001', description: 'Invalid DLN format detected during processing', status: 'Open' },
-                    { code: 'DLN-005', description: 'Missing extension payment verification', status: 'Open' },
+                    { code: 'DLN-001', description: 'Invalid DLN format detected during processing', status: 'New' },
+                    { code: 'DLN-005', description: 'Missing extension payment verification', status: 'New' },
                     { code: 'DLN-008', description: 'Duplicate filing indicator mismatch', status: 'Review' }
                 ],
                 priority: 'High',
-                status: 'Open',
+                status: 'New',
                 assignedTo: 'Unassigned',
                 receivedDate: '2024-04-15',
                 updatedDate: '2024-08-12',
@@ -1294,12 +1307,12 @@
                 taxpayerName: 'Smith, Jennifer L',
                 ssn: '***-**-7832',
                 formType: 'Form 4868',
-                taxPeriod: '2023',
+                taxPeriod: '2025',
                 errors: [
-                    { code: 'DLN-003', description: 'Extension payment amount mismatch', status: 'In Progress' }
+                    { code: 'DLN-003', description: 'Extension payment amount mismatch', status: 'Assigned' }
                 ],
                 priority: 'Medium',
-                status: 'In Progress',
+                status: 'Assigned',
                 assignedTo: 'Thompson, Sarah',
                 receivedDate: '2024-03-28',
                 updatedDate: '2024-08-14',
@@ -1375,7 +1388,7 @@
                 
                 <div style="margin-top: 1rem;">
                     <button class="btn btn-primary" onclick="openWorkRecordModal()">View Full Details</button>
-                    <button class="btn btn-secondary" onclick="resolveRecord()">Mark Resolved</button>
+                    <button class="btn btn-secondary" onclick="resolveRecord()">Mark QR Review</button>
                 </div>
             `;
             
@@ -1928,24 +1941,53 @@
             }
         });
 
-        function approveSelected() {
+        function assignForReview() {
             const selectedRows = document.querySelectorAll('input[type="checkbox"]:checked');
             if (selectedRows.length === 0) {
-                alert('Please select at least one record to approve.');
+                alert('Please select at least one record to assign for review.');
                 return;
             }
             
             const count = selectedRows.length;
-            if (confirm(`Are you sure you want to approve ${count} selected record(s)?`)) {
+            if (confirm(`Are you sure you want to assign ${count} selected record(s) for review?`)) {
                 // In a real application, this would make an API call
-                alert(`${count} record(s) have been approved successfully.`);
+                alert(`${count} record(s) have been assigned for review successfully.`);
                 
-                // Update UI to reflect approved status
+                // Update UI to reflect assigned status
                 selectedRows.forEach(checkbox => {
                     const row = checkbox.closest('tr');
                     const statusCell = row.querySelector('.status-badge');
                     if (statusCell) {
-                        statusCell.textContent = 'Approved';
+                        statusCell.textContent = 'In Review';
+                        statusCell.className = 'status-badge status-in-review';
+                    }
+                    checkbox.checked = false;
+                });
+            }
+            
+            // Close dropdown
+            document.getElementById('actionsMenu').classList.remove('show');
+        }
+
+        function assignForQRReview() {
+            const selectedRows = document.querySelectorAll('input[type="checkbox"]:checked');
+            if (selectedRows.length === 0) {
+                alert('Please select at least one record to assign for QR review.');
+                return;
+            }
+            
+            const count = selectedRows.length;
+            if (confirm(`Are you sure you want to assign ${count} selected record(s) for QR review?`)) {
+                // In a real application, this would make an API call
+                alert(`${count} record(s) have been assigned for QR review successfully.`);
+                
+                // Update UI to reflect QR review status
+                selectedRows.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const statusCell = row.querySelector('.status-badge');
+                    if (statusCell) {
+                        statusCell.textContent = 'QR Review';
+                        statusCell.className = 'status-badge status-qr-review';
                         statusCell.className = 'status-badge status-resolved';
                     }
                     checkbox.checked = false;
