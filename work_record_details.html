@@ -483,6 +483,11 @@
             color: #92400e;
         }
 
+        .error-status.new {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
         .error-status.in-progress {
             background: #dbeafe;
             color: #1e40af;
@@ -586,6 +591,7 @@
         .actions-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             padding: 0.625rem 1.25rem;
             border: none;
@@ -931,6 +937,16 @@
                             </svg>
                             Assign to me
                         </button>
+                        <button class="actions-menu-item" onclick="assignForQRReviewSingle()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            Assign for QR Review
+                        </button>
                         <button class="actions-menu-item" onclick="assignForReviewSingle()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -945,7 +961,7 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20,6 9,17 4,12"></polyline>
                             </svg>
-                            Approve
+                            QR Approve
                         </button>
                         <button class="actions-menu-item" onclick="suspendRecord()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1120,6 +1136,8 @@
 
     <script>
         let selectedRecord = null;
+        let originalFormData = {};
+        let hasUnsavedChanges = false;
         
         // Map error codes to form field IDs
         const errorFieldMapping = {
@@ -1134,15 +1152,15 @@
                 taxpayerName: 'Johnson, Michael R',
                 ssn: '***-**-4521',
                 formType: 'Form 4868',
-                taxPeriod: '2023',
+                taxPeriod: '2025',
                 errors: [
-                    { code: 'ERROR CODE 004', description: 'EIF/NAP Mismatch (IMF) - Entity mismatch between systems', status: 'Open' },
-                    { code: 'ERROR CODE 107', description: 'Tax Period - Invalid or missing tax period information', status: 'Open' },
+                    { code: 'ERROR CODE 004', description: 'EIF/NAP Mismatch (IMF) - Entity mismatch between systems', status: 'New' },
+                    { code: 'ERROR CODE 107', description: 'Tax Period - Invalid or missing tax period information', status: 'New' },
                     { code: 'Missing TIN', description: 'Missing or invalid Taxpayer Identification Number', status: 'Review' },
-                    { code: 'FIELD 01ED', description: 'Extended due date field validation error', status: 'Open' }
+                    { code: 'FIELD 01ED', description: 'Extended due date field validation error', status: 'New' }
                 ],
                 priority: 'High',
-                status: 'Open',
+                status: 'New',
                 assignedTo: 'Unassigned',
                 receivedDate: '2024-04-15',
                 updatedDate: '2024-08-12',
@@ -1436,7 +1454,101 @@
         }
 
         function saveForm() {
+            const changes = getFormChanges();
+            
+            if (changes.length > 0) {
+                addChangeNote(changes);
+            }
+            
+            // Update original form data to current values
+            captureFormData();
+            hasUnsavedChanges = false;
+            
             alert('Form saved successfully!');
+        }
+
+        function captureFormData() {
+            const formFields = [
+                'taxpayerName', 'ssn', 'spouseName', 'spouseSSN', 'address', 'city', 'state', 'zipCode',
+                'filingStatus', 'taxYear', 'agi', 'taxLiability', 'federalTaxWithheld', 'estimatedTaxPaid',
+                'extensionAmount', 'balanceDue', 'refundAmount', 'routingNumber', 'accountNumber',
+                'accountType', 'withdrawalDate', 'confirmationNumber'
+            ];
+            
+            originalFormData = {};
+            formFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    originalFormData[fieldId] = field.value || '';
+                }
+            });
+        }
+
+        function getFormChanges() {
+            const changes = [];
+            const fieldLabels = {
+                'taxpayerName': 'Taxpayer Name',
+                'ssn': 'SSN',
+                'spouseName': 'Spouse Name',
+                'spouseSSN': 'Spouse SSN',
+                'address': 'Address',
+                'city': 'City',
+                'state': 'State',
+                'zipCode': 'ZIP Code',
+                'filingStatus': 'Filing Status',
+                'taxYear': 'Tax Year',
+                'agi': 'Adjusted Gross Income',
+                'taxLiability': 'Tax Liability',
+                'federalTaxWithheld': 'Federal Tax Withheld',
+                'estimatedTaxPaid': 'Estimated Tax Paid',
+                'extensionAmount': 'Extension Amount',
+                'balanceDue': 'Balance Due',
+                'refundAmount': 'Refund Amount',
+                'routingNumber': 'Routing Number',
+                'accountNumber': 'Account Number',
+                'accountType': 'Account Type',
+                'withdrawalDate': 'Withdrawal Date',
+                'confirmationNumber': 'Confirmation Number'
+            };
+            
+            // Check all form fields, not just those in originalFormData
+            const allFormFields = document.querySelectorAll('.form-input, .form-select');
+            allFormFields.forEach(field => {
+                if (field.id && field.id !== 'quickNotes') {
+                    const fieldId = field.id;
+                    const originalValue = originalFormData[fieldId] || '';
+                    const currentValue = field.value || '';
+                    
+                    if (currentValue !== originalValue) {
+                        const fieldLabel = fieldLabels[fieldId] || fieldId;
+                        const oldValue = originalValue || '[blank]';
+                        const newValue = currentValue || '[blank]';
+                        changes.push(`${fieldLabel}: ${oldValue} → ${newValue}`);
+                    }
+                }
+            });
+            
+            return changes;
+        }
+
+        function addChangeNote(changes) {
+            const notesTextarea = document.getElementById('quickNotes');
+            
+            if (!notesTextarea) {
+                console.error('quickNotes textarea not found');
+                return;
+            }
+            
+            const currentNotes = notesTextarea.value;
+            const timestamp = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let changeNote = `${timestamp} - Field Changes:\n`;
+            changes.forEach(change => {
+                changeNote += `${change}\n`;
+            });
+            changeNote += '\n';
+            
+            notesTextarea.value = changeNote + currentNotes;
         }
 
         function submitForm() {
@@ -1550,6 +1662,15 @@
             }
         }
 
+        function assignForQRReviewSingle() {
+            const currentDLN = selectedRecord;
+            if (confirm(`Assign record ${currentDLN} for QR review?`)) {
+                console.log('Assigning record for QR review:', currentDLN);
+                alert('Record assigned for QR review successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            }
+        }
+
         function suspendRecord() {
             const currentDLN = selectedRecord;
             const reason = prompt('Please enter suspension reason:');
@@ -1580,8 +1701,27 @@
             }
         }
 
+        // Track form changes
+        function setupFormChangeTracking() {
+            const formFields = document.querySelectorAll('.form-input, .form-select, .form-textarea');
+            formFields.forEach(field => {
+                if (field.id !== 'quickNotes') { // Don't track notes field
+                    field.addEventListener('input', () => {
+                        hasUnsavedChanges = true;
+                    });
+                    field.addEventListener('change', () => {
+                        hasUnsavedChanges = true;
+                    });
+                }
+            });
+        }
+
         // Initialize page when loaded
-        window.onload = initializePage;
+        window.onload = function() {
+            initializePage();
+            captureFormData();
+            setupFormChangeTracking();
+        };
     </script>
 </body>
 </html>
