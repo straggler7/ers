@@ -19,15 +19,109 @@
         }
 
         .header {
-            background-color: #003d6b;
+            background: linear-gradient(135deg, #003d6b 0%, #0066cc 100%);
             color: white;
             padding: 1rem 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header h1 {
+        .header-left h1 {
+            margin: 0;
             font-size: 1.5rem;
             font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .user-menu-dropdown.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .user-menu-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #dee2e6;
         }
 
         .main-container {
@@ -341,13 +435,13 @@
             gap: 0.5rem;
         }
 
-        .form-section-title::before {
+        /* .form-section-title::before {
             content: '';
-            width: 4px;
-            height: 4px;
+            width: 10px;
+            height: 10px;
             background: #0066cc;
-            border-radius: 50%;
-        }
+            border-radius: 25%;
+        } */
 
         .panel {
             background: white;
@@ -892,12 +986,39 @@
 </head>
 <body>
     <div class="header">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="header-left">
             <div style="display: flex; align-items: center; gap: 1.5rem;">
                 <a href="work_records_grid.html" class="back-button" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;">
                     Back to Work Records
                 </a>
                 <h1 style="margin: 0;">IRS Error Resolution System</h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Sarah Thompson</div>
+                    <div class="user-role">Tax Examiner</div>
+                </div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenu">
+                        <a href="#" class="user-menu-item">Profile Settings</a>
+                        <a href="#" class="user-menu-item">Change Password</a>
+                        <hr class="user-menu-divider">
+                        <a href="#" class="user-menu-item">Logout</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -946,16 +1067,6 @@
                                 <polyline points="10,9 9,9 8,9"></polyline>
                             </svg>
                             Assign for QR Review
-                        </button>
-                        <button class="actions-menu-item" onclick="assignForReviewSingle()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14,2 14,8 20,8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10,9 9,9 8,9"></polyline>
-                            </svg>
-                            Assign for Review
                         </button>
                         <button class="actions-menu-item" onclick="approveRecord()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1014,7 +1125,7 @@
                     <div id="errorResolutionForm">
                             <!-- Form 4868 Fields -->
                             <div class="form-section">
-                                <div class="form-section-title">Identification</div>
+                                <div class="form-section-title">Form 4868 | Identification Section</div>
                                 <div class="form-group">
                                     <label class="form-label">Name</label>
                                     <input type="text" id="taxpayerName" class="form-input" value="Johnson, Michael R">
@@ -1050,7 +1161,7 @@
                             </div>
                             
                             <div class="form-section">
-                                <div class="form-section-title">Individual Income Tax</div>
+                                <div class="form-section-title">Form 4868 | Income Tax Section</div>
                                 <div class="field-grid">
                                     <div class="form-group">
                                         <label class="form-label">Total Tax Liability</label>
@@ -1653,14 +1764,6 @@
             }
         }
 
-        function assignForReviewSingle() {
-            const currentDLN = selectedRecord;
-            if (confirm(`Assign record ${currentDLN} for review?`)) {
-                console.log('Assigning record for review:', currentDLN);
-                alert('Record assigned for review successfully!');
-                document.getElementById('actionsMenu').classList.remove('show');
-            }
-        }
 
         function assignForQRReviewSingle() {
             const currentDLN = selectedRecord;
@@ -1715,6 +1818,20 @@
                 }
             });
         }
+
+        // User menu functionality
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            if (!userMenu.contains(event.target)) {
+                document.getElementById('userMenu').classList.remove('show');
+            }
+        });
 
         // Initialize page when loaded
         window.onload = function() {

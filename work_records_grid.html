@@ -19,15 +19,109 @@
         }
 
         .header {
-            background-color: #003d6b;
+            background: linear-gradient(135deg, #003d6b 0%, #0066cc 100%);
             color: white;
             padding: 1rem 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header h1 {
+        .header-left h1 {
+            margin: 0;
             font-size: 1.5rem;
             font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .user-menu-dropdown.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .user-menu-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #dee2e6;
         }
 
         .main-container {
@@ -819,7 +913,36 @@
 </head>
 <body>
     <div class="header">
-        <h1>IRS Error Resolution System</h1>
+        <div class="header-left">
+            <h1>IRS Error Resolution System</h1>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Sarah Thompson</div>
+                    <div class="user-role">Tax Examiner</div>
+                </div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenu">
+                        <a href="#" class="user-menu-item">Profile Settings</a>
+                        <a href="#" class="user-menu-item">Change Password</a>
+                        <hr class="user-menu-divider">
+                        <a href="#" class="user-menu-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="main-container">
@@ -835,7 +958,6 @@
                 <a href="#" class="nav-link" onclick="filterByStatus('in-progress')">Assigned</a>
                 <a href="#" class="nav-link" onclick="filterByStatus('in-review')">QR Review</a>
                 <a href="#" class="nav-link" onclick="filterByStatus('suspended')">Suspended</a>
-                <a href="#" class="nav-link" onclick="filterByStatus('rejected')">Rejected</a>
             </div>
         </div>
 
@@ -979,6 +1101,114 @@
                             <td>2024-04-18</td>
                             <td>2024-08-11</td>
                         </tr>
+                        <tr onclick="navigateToDetails('00222-107-05706-9')" data-dln="00222-107-05706-9">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>UVWX98765</td>
+                            <td>00222-107-05706-9</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Error Code 004, Missing TIN</td>
+                            <td><span class="status-badge status-in-progress">Assigned</span></td>
+                            <td>Davis, Robert</td>
+                            <td>2024-04-20</td>
+                            <td>2024-08-15</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00223-108-05707-0')" data-dln="00223-108-05707-0">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>YZAB43210</td>
+                            <td>00223-108-05707-0</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Field 01ED, Error Code 107</td>
+                            <td><span class="status-badge status-resolved">QR Review</span></td>
+                            <td>Wilson, Jennifer</td>
+                            <td>2024-04-05</td>
+                            <td>2024-08-09</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00224-109-05708-1')" data-dln="00224-109-05708-1">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>CDEF87654</td>
+                            <td>00224-109-05708-1</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Missing TIN, Error Code 004</td>
+                            <td><span class="status-badge status-open">New</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-22</td>
+                            <td>2024-08-16</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00225-110-05709-2')" data-dln="00225-110-05709-2">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>GHIJ21098</td>
+                            <td>00225-110-05709-2</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Field 01ED</td>
+                            <td><span class="status-badge status-in-progress">Assigned</span></td>
+                            <td>Brown, Michael</td>
+                            <td>2024-04-12</td>
+                            <td>2024-08-08</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00226-111-05710-3')" data-dln="00226-111-05710-3">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>KLMN65432</td>
+                            <td>00226-111-05710-3</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Error Code 107, Missing TIN</td>
+                            <td><span class="status-badge status-resolved">QR Review</span></td>
+                            <td>Anderson, Lisa</td>
+                            <td>2024-04-08</td>
+                            <td>2024-08-07</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00227-112-05711-4')" data-dln="00227-112-05711-4">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>OPQR09876</td>
+                            <td>00227-112-05711-4</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Error Code 004, Field 01ED</td>
+                            <td><span class="status-badge status-open">New</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-25</td>
+                            <td>2024-08-18</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00228-113-05712-5')" data-dln="00228-113-05712-5">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>STUV54321</td>
+                            <td>00228-113-05712-5</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Missing TIN</td>
+                            <td><span class="status-badge status-in-progress">Assigned</span></td>
+                            <td>Taylor, James</td>
+                            <td>2024-04-14</td>
+                            <td>2024-08-12</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00229-114-05713-6')" data-dln="00229-114-05713-6">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>WXYZ98765</td>
+                            <td>00229-114-05713-6</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Error Code 107, Field 01ED, Missing TIN</td>
+                            <td><span class="status-badge status-resolved">QR Review</span></td>
+                            <td>Martinez, Carlos</td>
+                            <td>2024-04-03</td>
+                            <td>2024-08-06</td>
+                        </tr>
+                        <tr onclick="navigateToDetails('00230-115-05714-7')" data-dln="00230-115-05714-7">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>ABCD13579</td>
+                            <td>00230-115-05714-7</td>
+                            <td>Form 4868</td>
+                            <td>2025</td>
+                            <td>Error Code 004</td>
+                            <td><span class="status-badge status-open">New</span></td>
+                            <td>Unassigned</td>
+                            <td>2024-04-28</td>
+                            <td>2024-08-20</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -986,23 +1216,23 @@
             <!-- Pagination Controls -->
             <div class="pagination-container">
                 <div class="pagination-info">
-                    <span class="results-count">Showing 1-5 of 127 records</span>
+                    <span class="results-count" id="resultsCount">Showing 1-15 of 127 records</span>
                 </div>
                 <div class="pagination-controls">
-                    <button class="pagination-btn pagination-btn-prev" onclick="previousPage()" disabled>
+                    <button class="pagination-btn pagination-btn-prev" id="prevBtn" onclick="previousPage()" disabled>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="15,18 9,12 15,6"></polyline>
                         </svg>
                         Previous
                     </button>
-                    <div class="pagination-numbers">
+                    <div class="pagination-numbers" id="paginationNumbers">
                         <button class="pagination-btn pagination-btn-number active" onclick="goToPage(1)">1</button>
                         <button class="pagination-btn pagination-btn-number" onclick="goToPage(2)">2</button>
                         <button class="pagination-btn pagination-btn-number" onclick="goToPage(3)">3</button>
                         <span class="pagination-ellipsis">...</span>
-                        <button class="pagination-btn pagination-btn-number" onclick="goToPage(26)">26</button>
+                        <button class="pagination-btn pagination-btn-number" onclick="goToPage(9)">9</button>
                     </div>
-                    <button class="pagination-btn pagination-btn-next" onclick="nextPage()">
+                    <button class="pagination-btn pagination-btn-next" id="nextBtn" onclick="nextPage()">
                         Next
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="9,18 15,12 9,6"></polyline>
@@ -1012,8 +1242,9 @@
                 <div class="pagination-size">
                     <label for="pageSize">Show:</label>
                     <select id="pageSize" class="pagination-select" onchange="changePageSize(this.value)">
-                        <option value="5" selected>5</option>
+                        <option value="5">5</option>
                         <option value="10">10</option>
+                        <option value="15" selected>15</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                     </select>
@@ -1814,118 +2045,7 @@
             window.location.href = `work_record_details.html?dln=${dln}`;
         }
 
-        // Pagination functionality
-        let currentPage = 1;
-        let pageSize = 5;
-        let totalRecords = 127;
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePagination();
-                // In a real application, this would fetch new data
-                console.log(`Loading page ${currentPage}`);
-            }
-        }
-
-        function nextPage() {
-            const totalPages = Math.ceil(totalRecords / pageSize);
-            if (currentPage < totalPages) {
-                currentPage++;
-                updatePagination();
-                // In a real application, this would fetch new data
-                console.log(`Loading page ${currentPage}`);
-            }
-        }
-
-        function goToPage(page) {
-            const totalPages = Math.ceil(totalRecords / pageSize);
-            if (page >= 1 && page <= totalPages) {
-                currentPage = page;
-                updatePagination();
-                // In a real application, this would fetch new data
-                console.log(`Loading page ${currentPage}`);
-            }
-        }
-
-        function changePageSize(newSize) {
-            pageSize = parseInt(newSize);
-            currentPage = 1; // Reset to first page
-            updatePagination();
-            // In a real application, this would fetch new data
-            console.log(`Changed page size to ${pageSize}, loading page 1`);
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(totalRecords / pageSize);
-            const startRecord = (currentPage - 1) * pageSize + 1;
-            const endRecord = Math.min(currentPage * pageSize, totalRecords);
-
-            // Update results count
-            document.querySelector('.results-count').textContent = 
-                `Showing ${startRecord}-${endRecord} of ${totalRecords} records`;
-
-            // Update previous button
-            const prevBtn = document.querySelector('.pagination-btn-prev');
-            prevBtn.disabled = currentPage === 1;
-
-            // Update next button
-            const nextBtn = document.querySelector('.pagination-btn-next');
-            nextBtn.disabled = currentPage === totalPages;
-
-            // Update page numbers
-            updatePageNumbers(totalPages);
-        }
-
-        function updatePageNumbers(totalPages) {
-            const numbersContainer = document.querySelector('.pagination-numbers');
-            let numbersHtml = '';
-
-            // Always show first page
-            if (currentPage === 1) {
-                numbersHtml += `<button class="pagination-btn pagination-btn-number active" onclick="goToPage(1)">1</button>`;
-            } else {
-                numbersHtml += `<button class="pagination-btn pagination-btn-number" onclick="goToPage(1)">1</button>`;
-            }
-
-            // Show ellipsis if needed
-            if (currentPage > 3) {
-                numbersHtml += `<span class="pagination-ellipsis">...</span>`;
-            }
-
-            // Show pages around current page
-            const start = Math.max(2, currentPage - 1);
-            const end = Math.min(totalPages - 1, currentPage + 1);
-
-            for (let i = start; i <= end; i++) {
-                if (i === currentPage) {
-                    numbersHtml += `<button class="pagination-btn pagination-btn-number active" onclick="goToPage(${i})">${i}</button>`;
-                } else {
-                    numbersHtml += `<button class="pagination-btn pagination-btn-number" onclick="goToPage(${i})">${i}</button>`;
-                }
-            }
-
-            // Show ellipsis if needed
-            if (currentPage < totalPages - 2) {
-                numbersHtml += `<span class="pagination-ellipsis">...</span>`;
-            }
-
-            // Always show last page (if more than 1 page)
-            if (totalPages > 1) {
-                if (currentPage === totalPages) {
-                    numbersHtml += `<button class="pagination-btn pagination-btn-number active" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-                } else {
-                    numbersHtml += `<button class="pagination-btn pagination-btn-number" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-                }
-            }
-
-            numbersContainer.innerHTML = numbersHtml;
-        }
-
-        // Initialize pagination on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updatePagination();
-        });
+        // Legacy pagination functions removed - now handled by new pagination system
 
         // Actions dropdown functionality
         function toggleActionsDropdown() {
@@ -2388,6 +2508,134 @@
             alert('Record marked as resolved');
         }
 
+
+
+        // Handle select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.work-grid tbody input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Pagination variables
+        let currentPage = 1;
+        let recordsPerPage = 15;
+        let totalRecords = 127;
+        let allRows = [];
+        let filteredRows = [];
+        let currentFilter = null;
+        
+        // Initialize pagination on page load
+        function initializePagination() {
+            allRows = Array.from(document.querySelectorAll('.work-grid tbody tr'));
+            filteredRows = [...allRows];
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredRows.length / recordsPerPage);
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            
+            // Hide all rows first
+            allRows.forEach(row => row.style.display = 'none');
+            
+            // Show only the rows for current page
+            for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+                filteredRows[i].style.display = '';
+            }
+            
+            // Update pagination controls
+            updatePaginationControls(totalPages);
+            
+            // Update results count
+            const actualShown = Math.min(recordsPerPage, filteredRows.length - startIndex);
+            const startRecord = filteredRows.length > 0 ? startIndex + 1 : 0;
+            const endRecord = startIndex + actualShown;
+            
+            let countText = `Showing ${startRecord}-${endRecord} of ${filteredRows.length} records`;
+            if (currentFilter) {
+                countText += ` (filtered by ${currentFilter})`;
+            }
+            document.getElementById('resultsCount').textContent = countText;
+        }
+        
+        function updatePaginationControls(totalPages) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const paginationNumbers = document.getElementById('paginationNumbers');
+            
+            // Update prev/next buttons
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Update page numbers
+            let numbersHtml = '';
+            
+            if (totalPages <= 5) {
+                // Show all pages if 5 or fewer
+                for (let i = 1; i <= totalPages; i++) {
+                    const activeClass = i === currentPage ? ' active' : '';
+                    numbersHtml += `<button class="pagination-btn pagination-btn-number${activeClass}" onclick="goToPage(${i})">${i}</button>`;
+                }
+            } else {
+                // Show first page
+                const activeClass1 = currentPage === 1 ? ' active' : '';
+                numbersHtml += `<button class="pagination-btn pagination-btn-number${activeClass1}" onclick="goToPage(1)">1</button>`;
+                
+                if (currentPage > 3) {
+                    numbersHtml += '<span class="pagination-ellipsis">...</span>';
+                }
+                
+                // Show pages around current page
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+                
+                for (let i = start; i <= end; i++) {
+                    const activeClass = i === currentPage ? ' active' : '';
+                    numbersHtml += `<button class="pagination-btn pagination-btn-number${activeClass}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                
+                if (currentPage < totalPages - 2) {
+                    numbersHtml += '<span class="pagination-ellipsis">...</span>';
+                }
+                
+                // Show last page
+                if (totalPages > 1) {
+                    const activeClassLast = currentPage === totalPages ? ' active' : '';
+                    numbersHtml += `<button class="pagination-btn pagination-btn-number${activeClassLast}" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+                }
+            }
+            
+            paginationNumbers.innerHTML = numbersHtml;
+        }
+        
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+            }
+        }
+        
+        function nextPage() {
+            const totalPages = Math.ceil(filteredRows.length / recordsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+            }
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            updatePagination();
+        }
+        
+        function changePageSize(size) {
+            recordsPerPage = parseInt(size);
+            currentPage = 1; // Reset to first page
+            updatePagination();
+        }
+        
+        // Update filter functions to work with pagination
         function filterRecords(type) {
             // Remove active class from all nav links
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
@@ -2396,27 +2644,67 @@
             event.target.classList.add('active');
             
             if (type === 'all') {
-                alert('Showing all records');
+                filteredRows = [...allRows];
+                currentFilter = null;
             } else if (type === 'my') {
-                alert('Showing only records assigned to current user');
+                filteredRows = allRows.filter(row => {
+                    const assignedCell = row.cells[7];
+                    return assignedCell.textContent.trim() === 'Thompson, Sarah';
+                });
+                currentFilter = 'my records';
             }
+            
+            currentPage = 1; // Reset to first page
+            updatePagination();
         }
-
+        
         function filterByStatus(status) {
-            // Remove active class from work records nav links but keep quick filters
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.onclick && link.onclick.toString().includes('filterRecords')) {
-                    link.classList.remove('active');
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            // Add active class to clicked link
+            event.target.classList.add('active');
+            
+            filteredRows = allRows.filter(row => {
+                const statusBadge = row.querySelector('.status-badge');
+                const statusText = statusBadge.textContent.trim();
+                
+                switch(status) {
+                    case 'open':
+                        return statusText === 'New';
+                    case 'in-progress':
+                        return statusText === 'Assigned';
+                    case 'in-review':
+                        return statusText === 'QR Review';
+                    case 'suspended':
+                        return statusText === 'Suspended';
+                    default:
+                        return true;
                 }
             });
             
-            alert(`Filtering by ${status} items`);
+            currentFilter = status;
+            currentPage = 1; // Reset to first page
+            updatePagination();
+        }
+        
+        // Initialize pagination when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initializePagination();
+        });
+        
+        // User menu functionality
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
         }
 
-        // Handle select all checkbox
-        document.getElementById('selectAll').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.work-grid tbody input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = this.checked);
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            if (!userMenu.contains(event.target)) {
+                document.getElementById('userMenu').classList.remove('show');
+            }
         });
 
         // Close modals when clicking outside
