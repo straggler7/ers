@@ -1,0 +1,2660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Record Details - IRS Error Resolution System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003d6b 0%, #0066cc 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .user-menu-dropdown.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .user-menu-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            max-width: 1900px;
+            margin: 0 auto;
+            height: calc(100vh - 80px);
+        }
+
+        .top-toolbar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f3f4;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .toolbar-center {
+            flex: 1;
+            text-align: left;
+            margin-left: 2rem;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .content-layout {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 1rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        .main-form-area {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .floating-save-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #ffffff;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(8px);
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .floating-save-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .floating-save-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .floating-save-btn .save-icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .floating-save-btn .save-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+        }
+
+        @media (max-width: 768px) {
+            .floating-save-btn {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.625rem;
+            }
+            
+            .floating-save-btn .save-text {
+                display: none;
+            }
+        }
+
+        .center-panel.with-irm {
+            grid-column: 1 / -1;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+
+        .back-button::before {
+            content: '←';
+            margin-right: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #212529;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .dln-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.75rem;
+            border: 1px solid #bbdefb;
+        }
+
+        .id-badge {
+            display: inline-block;
+            background: #f3e5f5;
+            color: #7b1fa2;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.75rem;
+            border: 1px solid #ce93d8;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .btn-primary:hover {
+            background-color: #0052a3;
+            border-color: #0052a3;
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: #4b5563;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        .form-input.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+
+        .form-input.error:focus {
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .section-status-pill.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .section-status-pill.corrected {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .section-status-pill.no-errors {
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .field-error-text {
+            display: block;
+            color: #dc2626;
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+            line-height: 1.4;
+        }
+        
+        .form-group {
+            position: relative;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #f3f4f6;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header {
+            border-bottom: 1px solid #f1f3f4;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin: 0;
+        }
+
+        .sidebar-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .errors-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+
+        .sidebar-section-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-accordion {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background: white;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .error-accordion:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .error-accordion.expanded {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
+        }
+
+        .error-accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            cursor: pointer;
+            background: #fafafa;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .error-accordion-header:hover {
+            background: #f3f4f6;
+        }
+
+        .error-accordion.expanded .error-accordion-header {
+            background: #f8faff;
+            border-bottom-color: #e5e7eb;
+        }
+
+        .error-accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .error-accordion-icon {
+            width: 16px;
+            height: 16px;
+            stroke: #6b7280;
+            transition: transform 0.2s ease;
+        }
+
+        .error-accordion.expanded .error-accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .error-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .error-accordion.expanded .error-accordion-content {
+            max-height: 800px;
+        }
+
+        .error-accordion-body {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .error-header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .error-code {
+            font-weight: 600;
+            color: #dc2626;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            background: #fef2f2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .error-description {
+            font-size: 0.875rem;
+            color: #4b5563;
+            line-height: 1.4;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .error-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            flex-shrink: 0;
+        }
+
+        .error-status.active {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .error-status.corrected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error-item-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .error-action-btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .error-action-btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .error-action-btn.primary:hover {
+            background: #2563eb;
+        }
+
+        .error-action-btn.success {
+            background: #10b981;
+            color: white;
+        }
+
+        .error-action-btn.success:hover {
+            background: #059669;
+        }
+
+        .error-status.review {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .irm-inline {
+            display: none;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+            margin-top: 1rem;
+        }
+
+        .irm-inline.visible {
+            display: block;
+        }
+
+        .irm-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .irm-btn:hover {
+            background: #138496;
+        }
+
+        .rrd-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .rrd-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .save-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .save-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .assign-review-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .assign-review-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Actions Dropdown Styles */
+        .actions-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .actions-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            background: #0066cc;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .actions-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .actions-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            min-width: 200px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            margin-top: 4px;
+        }
+
+        .actions-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .actions-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .actions-menu-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .actions-menu-item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .actions-menu-item:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .actions-menu-item svg {
+            flex-shrink: 0;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+
+        .irm-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .irm-panel.active {
+            display: block;
+        }
+
+        .irm-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .irm-panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #003d6b;
+        }
+
+        .irm-close-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .irm-close-btn:hover {
+            background: #5a6268;
+        }
+
+        .irm-content {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .irm-section {
+            margin-bottom: 1rem;
+        }
+
+        .irm-section-title {
+            font-weight: 600;
+            color: #003d6b;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .irm-text {
+            color: #495057;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .irm-steps {
+            list-style: decimal;
+            padding-left: 1rem;
+            margin: 0;
+        }
+
+        .irm-steps li {
+            padding: 0.25rem 0;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .close {
+            color: #6c757d;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.5rem;
+            margin: -0.5rem -0.5rem -0.5rem 0;
+        }
+
+        .close:hover {
+            color: #003d6b;
+        }
+
+        .form-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .content-container {
+            display: block;
+            width: 100%;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .field-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .field-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 0.875rem;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .form-checkbox {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #0066cc;
+        }
+
+        .checkmark {
+            display: none;
+        }
+
+        .field-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .error-highlight {
+            animation: errorHighlight 0.5s ease;
+        }
+
+        @keyframes errorHighlight {
+            0% {
+                background-color: #f8d7da;
+            }
+            100% {
+                background-color: white;
+            }
+        }
+
+        /* Enhanced Error Select Dropdown Styling */
+        #errorSelect {
+            width: 100%;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23374151" stroke-width="2"><polyline points="6,9 12,15 18,9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+            padding-right: 2.5rem;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #errorSelect:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        #errorSelect:hover {
+            border-color: #d1d5db;
+        }
+
+        /* Note: Option styling is limited in browsers, so we'll use the info panel for visual styling */
+        #errorSelect option {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+
+        #errorSelect option[value=""] {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* Error code styling within options */
+        .error-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .error-select-info {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .error-select-info.show {
+            display: block;
+            animation: slideIn 0.2s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-code-badge {
+            display: inline-block;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+        }
+
+        /* IRM Accordion Styling */
+        .irm-accordion {
+            margin-top: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            overflow: hidden;
+            display: none;
+        }
+
+        .irm-accordion.show {
+            display: block;
+            animation: slideIn 0.2s ease;
+        }
+
+        .irm-accordion-header {
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+
+        .irm-accordion-header:hover {
+            background: #f3f4f6;
+        }
+
+        .irm-accordion-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin: 0;
+        }
+
+        .irm-accordion-icon {
+            width: 16px;
+            height: 16px;
+            stroke: #6b7280;
+            transition: transform 0.2s ease;
+        }
+
+        .irm-accordion-header.expanded .irm-accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .irm-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .irm-accordion-content.expanded {
+            max-height: 500px;
+        }
+
+        .irm-accordion-body {
+            padding: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+
+        .irm-section {
+            margin-bottom: 1rem;
+        }
+
+        .irm-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .irm-section-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .irm-text {
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .irm-steps {
+            list-style: decimal;
+            padding-left: 1rem;
+            margin: 0;
+        }
+
+        .irm-steps li {
+            padding: 0.25rem 0;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            color: #6b7280;
+        }
+        
+        /* Error Tabs Styling */
+        .error-tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        
+        .error-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .error-tab:hover {
+            color: #374151;
+            background: #f9fafb;
+        }
+        
+        .error-tab.active {
+            color: #0066cc;
+            border-bottom-color: #0066cc;
+            background: #f8faff;
+        }
+        
+        .error-tab-content {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+        
+        .error-tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .error-list-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .error-irm-section {
+            margin-bottom: 1rem;
+        }
+
+        .error-irm-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .error-irm-content {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .error-irm-steps {
+            list-style: decimal;
+            padding-left: 1.25rem;
+            margin: 0.5rem 0;
+        }
+
+        .error-irm-steps li {
+            padding: 0.25rem 0;
+            color: #6b7280;
+        }
+        
+        .error-action-btn {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: white;
+            color: #374151;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .error-action-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        .error-action-btn.mark-corrected {
+            color: #16a34a;
+            border-color: #bbf7d0;
+        }
+        
+        .error-action-btn.mark-corrected:hover {
+            background: #f0fdf4;
+            border-color: #16a34a;
+        }
+        
+        .error-action-btn.mark-active {
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        
+        .error-action-btn.mark-active:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="work_records_grid.html" class="back-button" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;">
+                    Back to Work Records
+                </a>
+                <h1 style="margin: 0;">IRS Error Resolution System</h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Sarah Thompson</div>
+                    <div class="user-role">Tax Examiner</div>
+                </div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenu">
+                        <a href="#" class="user-menu-item">Profile Settings</a>
+                        <a href="#" class="user-menu-item">Change Password</a>
+                        <hr class="user-menu-divider">
+                        <a href="#" class="user-menu-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Top Toolbar -->
+        <div class="top-toolbar">
+            <div class="toolbar-left">
+                <!-- Back button moved to header -->
+            </div>
+            <div class="toolbar-center">
+                <h1 class="page-title">Work Record <span class="id-badge" id="idDisplay">ID: ABCD90210</span><span class="dln-badge" id="dlnDisplay">DLN: 00217-102-05701-4</span></h1>
+            </div>
+            <div class="toolbar-right">
+                <button type="button" class="save-btn" onclick="saveForm()">Save</button>
+                <div class="actions-dropdown">
+                    <button class="actions-btn" onclick="toggleActionsDropdown()">
+                        Actions
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="actions-menu" id="actionsMenu">
+                        <button class="actions-menu-item" onclick="assignToTaxExaminer()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <polyline points="17,11 19,13 23,9"></polyline>
+                            </svg>
+                            Assign to Tax Examiner
+                        </button>
+                        <button class="actions-menu-item" onclick="assignToMe()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M4 21v-2a4 4 0 0 1 3-3.87"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Assign to me
+                        </button>
+                        <button class="actions-menu-item" onclick="assignForQRReviewSingle()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            Assign for QR Review
+                        </button>
+                        <button class="actions-menu-item" onclick="approveRecord()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            QR Approve
+                        </button>
+                        <button class="actions-menu-item" onclick="suspendRecord()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Suspend
+                        </button>
+                    </div>
+                </div>
+                <!-- <button type="button" class="assign-review-btn" onclick="assignForReview()">Assign for Review</button> -->
+                <button type="button" class="rrd-btn" onclick="openRRDModal()">View RRD Data</button>
+            </div>
+        </div>
+
+        <!-- Content Layout -->
+        <div class="content-layout">
+            <!-- Left Sidebar -->
+            <div class="left-sidebar">
+                <!-- Errors List Section -->
+                <div class="sidebar-section errors-section">
+                    <div class="sidebar-section-title">Errors</div>
+                    
+                    <!-- Error Tabs -->
+                    <div class="error-tabs">
+                        <button class="error-tab active" data-tab="active" onclick="switchErrorTab('active')">
+                            Active
+                        </button>
+                        <button class="error-tab" data-tab="corrected" onclick="switchErrorTab('corrected')">
+                            Corrected
+                        </button>
+                    </div>
+                    
+                    <!-- Active Errors Tab Content -->
+                    <div id="activeErrorsTab" class="error-tab-content active">
+                        <div class="error-list-container">
+                            <ul id="activeErrorsList" class="error-list">
+                                <!-- Active errors will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Corrected Errors Tab Content -->
+                    <div id="correctedErrorsTab" class="error-tab-content">
+                        <div class="error-list-container">
+                            <ul id="correctedErrorsList" class="error-list">
+                                <!-- Corrected errors will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+                <!-- Notes Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Notes</div>
+                    <textarea id="quickNotes" class="form-textarea" rows="4" placeholder="Add quick notes here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="main-form-area">
+                <div class="panel">
+                    <!-- <div class="panel-header">
+                        <h3 class="panel-title">Work Record 12345</h3>
+                    </div> -->
+                    <div id="errorResolutionForm">
+                            <!-- Form 4868 Fields -->
+                            <div class="form-section">
+                                <div class="form-section-title">Form 4868 | Identification Section</div>
+                                <div class="form-group">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" id="taxpayerName" class="form-input" value="Johnson, Michael R">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" id="address" class="form-input" value="1247 Oak Street">
+                                </div>
+                                <div class="field-grid-3">
+                                    <div class="form-group">
+                                        <label class="form-label">City, Town or Post Office</label>
+                                        <input type="text" id="city" class="form-input" value="Springfield">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tax Year</label>
+                                        <select id="taxYear" class="form-select">
+                                            <option value="2023">2023</option>
+                                            <option value="2024">2024</option>
+                                            <option value="2025" selected>2025</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Zip Code</label>
+                                        <input type="text" id="zipCode" class="form-input" value="62701">
+                                    </div>
+                                </div>
+                                <div class="field-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Social Security Number</label>
+                                        <input type="text" id="ssn" class="form-input" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Spouse's Social Security Number</label>
+                                        <input type="text" id="spouseSSN" class="form-input" value="987-65-4321">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <div class="form-section-title">Form 4868 | Income Tax Section</div>
+                                <div class="field-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Total Tax Liability</label>
+                                        <input type="number" id="totalTaxLiability" class="form-input" value="8750.00" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Total Payments</label>
+                                        <input type="number" id="taxPaid" class="form-input" value="1550.00" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="field-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Balance Due</label>
+                                        <input type="number" id="balanceDue" class="form-input" value="1550.00" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Amount Being Paid</label>
+                                        <input type="number" id="amountBeingPaid" class="form-input" value="1550.00" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label checkbox-container">
+                                        <input type="checkbox" id="outOfCountry" class="form-checkbox" checked>
+                                        <span class="checkmark"></span>
+                                        You're out of country and a U.S. Citizen or Resident
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label checkbox-container">
+                                        <input type="checkbox" id="form1040NR" class="form-checkbox">
+                                        <span class="checkmark"></span>
+                                        Filed Form 1040-NR and didn't receive wages as an employee subject to tax withholding
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- <div class="form-section">
+                                <div class="form-section-title">Resolution Notes</div>
+                                <div class="form-group">
+                                    <label class="form-label">Notes</label>
+                                    <textarea id="resolutionNotes" class="form-textarea" rows="4" placeholder="Enter resolution notes and actions taken..."></textarea>
+                                </div>
+                            </div> -->
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Save Button -->
+    <button type="button" class="floating-save-btn" onclick="saveForm()" title="Save Form">
+        <svg class="save-icon" viewBox="0 0 24 24">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17,21 17,13 7,13 7,21"></polyline>
+            <polyline points="7,3 7,8 15,8"></polyline>
+        </svg>
+        <span class="save-text">Save</span>
+    </button>
+
+    <!-- IRM Panel -->
+    <div id="irmPanel" class="irm-panel">
+        <div class="irm-panel-header">
+            <h2 class="irm-panel-title">Internal Revenue Manual (IRM)</h2>
+            <button class="irm-close-btn" onclick="closeIRMPanel()">Close</button>
+        </div>
+        <div id="irmContent" class="irm-content">
+            <!-- IRM content will be populated here -->
+        </div>
+    </div>
+
+    <!-- RRD Modal -->
+    <div id="rrdModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('rrdModal')">&times;</span>
+            <h2>Return Request and Display (RRD)</h2>
+            <div id="rrdDetails">
+                <p>Loading RRD data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRecord = null;
+        let originalFormData = {};
+        let hasUnsavedChanges = false;
+        
+        // Map error codes to form field IDs and error messages
+        const errorFieldMapping = {
+            'ERROR CODE 004': {
+                fieldId: 'ssn',
+                message: 'EIF/NAP Mismatch: Entity information inconsistent between IRS systems. Verify taxpayer name and SSN.'
+            },
+            'ERROR CODE 107': {
+                fieldId: 'taxYear',
+                message: 'Invalid tax period: Tax year must be valid and within acceptable range for extension requests.'
+            },
+            'Missing TIN': {
+                fieldId: 'ssn',
+                message: 'Missing Taxpayer Identification Number: SSN is required and must be in correct format (XXX-XX-XXXX).'
+            },
+            'FIELD 01ED': {
+                fieldId: 'balanceDue',
+                message: 'Extended due date field validation error: Balance due amount must be calculated correctly.'
+            }
+        };
+        
+        const workRecordData = {
+            '00217-102-05701-4': {
+                taxpayerName: 'Johnson, Michael R',
+                ssn: '***-**-4521',
+                formType: 'Form 4868',
+                taxPeriod: '2025',
+                errors: [
+                    { code: 'ERROR CODE 004', description: 'EIF/NAP Mismatch (IMF) - Entity mismatch between systems', status: 'Active' },
+                    { code: 'ERROR CODE 107', description: 'Tax Period - Invalid or missing tax period information', status: 'Active' },
+                    { code: 'Missing TIN', description: 'Missing or invalid Taxpayer Identification Number', status: 'Active' },
+                    { code: 'FIELD 01ED', description: 'Extended due date field validation error', status: 'Corrected' }
+                ],
+                priority: 'High',
+                status: 'New',
+                assignedTo: 'Unassigned',
+                receivedDate: '2024-04-15',
+                updatedDate: '2024-08-12',
+                form4868Data: {
+                    taxpayerName: 'Johnson, Michael R',
+                    ssn: '123-45-6789',
+                    address: '1247 Oak Street',
+                    city: 'Springfield',
+                    state: 'IL',
+                    zipCode: '62701',
+                    spouseSSN: '987-65-4321',
+                    totalTaxLiability: '8750.00',
+                    totalPayments: '7200.00',
+                    balanceDue: '1550.00',
+                    amountBeingPaid: '1550.00',
+                    outOfCountry: true,
+                    form1040NR: false,
+                    receivedDate: '2024-04-15',
+                    processedDate: '',
+                    status: 'processing',
+                    confirmationNumber: 'EXT2024-001234'
+                }
+            }
+        };
+
+        const irmGuidance = {
+            'ERROR CODE 004': {
+                title: 'EIF/NAP Mismatch (IMF)',
+                sections: [
+                    {
+                        title: 'Description',
+                        content: 'Entity Information File (EIF) and Name Address Program (NAP) mismatch detected in Individual Master File (IMF). This indicates inconsistent taxpayer entity information between IRS systems.'
+                    },
+                    {
+                        title: 'Resolution Steps',
+                        steps: [
+                            'Verify taxpayer name and SSN against Master File records.',
+                            'Check for recent name changes or address updates.',
+                            'Coordinate with Entity Control to resolve discrepancies.',
+                            'Update entity information in appropriate systems.',
+                            'Reprocess Form 4868 after entity correction.'
+                        ]
+                    },
+                    {
+                        title: 'IRM Reference',
+                        content: 'See IRM 3.12.179 for Entity Control procedures and IRM 21.2.2 for IMF processing guidelines.'
+                    }
+                ]
+            },
+            'ERROR CODE 107': {
+                title: 'Tax Period Error',
+                sections: [
+                    {
+                        title: 'Description',
+                        content: 'Invalid or missing tax period information on Form 4868. The tax year field may contain invalid data or be blank.'
+                    },
+                    {
+                        title: 'Resolution Steps',
+                        steps: [
+                            'Verify the tax year is correctly entered (format: YYYY).',
+                            'Ensure tax year is within acceptable range for extension requests.',
+                            'Check for transposed digits or invalid characters.',
+                            'Correct tax period field and resubmit form.',
+                            'Update processing system with correct tax period.'
+                        ]
+                    },
+                    {
+                        title: 'IRM Reference',
+                        content: 'See IRM 21.4.1 for Form 4868 processing requirements and valid tax period formats.'
+                    }
+                ]
+            },
+            'Missing TIN': {
+                title: 'Missing Taxpayer Identification Number',
+                sections: [
+                    {
+                        title: 'Description',
+                        content: 'Taxpayer Identification Number (TIN) is missing or invalid on Form 4868. This includes missing SSN, ITIN, or EIN depending on entity type.'
+                    },
+                    {
+                        title: 'Resolution Steps',
+                        steps: [
+                            'Verify TIN is present in the appropriate field.',
+                            'Check TIN format for correct number of digits and hyphens.',
+                            'Validate TIN against IRS databases for existence.',
+                            'Contact taxpayer if TIN appears invalid or unlocatable.',
+                            'Update form with correct TIN and reprocess.'
+                        ]
+                    },
+                    {
+                        title: 'IRM Reference',
+                        content: 'See IRM 3.21.263 for TIN validation procedures and IRM 21.4.1 for Form 4868 TIN requirements.'
+                    }
+                ]
+            },
+            'FIELD 01ED': {
+                title: 'Extended Due Date Field Error',
+                sections: [
+                    {
+                        title: 'Description',
+                        content: 'Field 01ED (Extended Due Date) contains invalid data or formatting errors. This field should contain the automatic 6-month extension due date.'
+                    },
+                    {
+                        title: 'Resolution Steps',
+                        steps: [
+                            'Verify extended due date is calculated correctly (original due date + 6 months).',
+                            'Check date format matches system requirements (MMDDYYYY).',
+                            'Ensure date falls on or before maximum allowable extension date.',
+                            'Correct field formatting and recalculate if necessary.',
+                            'Update processing system with corrected extended due date.'
+                        ]
+                    },
+                    {
+                        title: 'IRM Reference',
+                        content: 'See IRM 21.4.1 for Form 4868 due date calculations and IRM 25.6.1 for penalty and interest computations.'
+                    }
+                ]
+            }
+        };
+
+        // Get DLN from URL parameters
+        function getDLNFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('dln');
+        }
+
+        // Initialize page with DLN data
+        function initializePage() {
+            // Set the current DLN from URL parameter or default
+            const urlParams = new URLSearchParams(window.location.search);
+            const dln = urlParams.get('dln') || '00217-102-05701-4';
+            selectedRecord = dln;
+            
+            // Update display elements
+            document.getElementById('idDisplay').textContent = `ID: ${workRecordData[dln]?.taxpayerName?.split(',')[0] || 'ABCD90210'}`;
+            document.getElementById('dlnDisplay').textContent = `DLN: ${dln}`;
+            
+            // Populate error list
+            populateErrorList(dln);
+            
+            // Apply error styling to fields and sections
+            applyErrorStyling(dln);
+        }
+
+        function populateErrorList(dln) {
+            const record = workRecordData[dln];
+            if (!record) return;
+
+            const activeErrorsList = document.getElementById('activeErrorsList');
+            const correctedErrorsList = document.getElementById('correctedErrorsList');
+            
+            // Clear existing lists
+            activeErrorsList.innerHTML = '';
+            correctedErrorsList.innerHTML = '';
+            
+            // Populate error lists based on status
+            record.errors.forEach(error => {
+                const listItem = createErrorListItem(error, dln);
+                
+                if (error.status === 'Active') {
+                    activeErrorsList.appendChild(listItem);
+                } else if (error.status === 'Corrected') {
+                    correctedErrorsList.appendChild(listItem);
+                }
+            });
+            
+            // Show message if no errors in a category
+            if (activeErrorsList.children.length === 0) {
+                activeErrorsList.innerHTML = '<li style="padding: 1rem; text-align: center; color: #6b7280; font-size: 0.875rem;">No active errors</li>';
+            }
+            
+            if (correctedErrorsList.children.length === 0) {
+                correctedErrorsList.innerHTML = '<li style="padding: 1rem; text-align: center; color: #6b7280; font-size: 0.875rem;">No corrected errors</li>';
+            }
+        }
+        
+        function createErrorListItem(error, dln) {
+            const listItem = document.createElement('li');
+            listItem.className = 'error-accordion';
+            listItem.setAttribute('data-error-code', error.code);
+            
+            const irmGuidanceContent = irmGuidance[error.code] ? generateIRMContent(irmGuidance[error.code]) : '<p class="error-irm-content">IRM guidance for this error code is not available.</p>';
+            
+            listItem.innerHTML = `
+                <div class="error-accordion-header" onclick="toggleErrorAccordion('${error.code}')">
+                    <div class="error-accordion-title">
+                        <div class="error-header-content">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <div class="error-code">${error.code}</div>
+                                <div class="error-status ${error.status.toLowerCase()}">${error.status}</div>
+                            </div>
+                            <div class="error-description">${error.description}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <svg class="error-accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="error-accordion-content">
+                    <div class="error-accordion-body">
+                        <div class="error-irm-section">
+                            <div class="error-irm-title">IRM Guidance</div>
+                            ${irmGuidanceContent}
+                        </div>
+                        <div class="error-actions">
+                            ${error.status === 'Active' ? 
+                                `<button class="error-action-btn mark-corrected" onclick="markErrorCorrected('${error.code}', '${dln}'); event.stopPropagation();">Mark Corrected</button>` :
+                                `<button class="error-action-btn mark-active" onclick="markErrorActive('${error.code}', '${dln}'); event.stopPropagation();">Mark Active</button>`
+                            }
+                            <button class="error-action-btn" onclick="selectErrorFromList('${error.code}', '${dln}'); event.stopPropagation();">Focus Field</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return listItem;
+        }
+        
+        function generateIRMContent(guidance) {
+            let contentHtml = '';
+            
+            guidance.sections.forEach(section => {
+                contentHtml += `<div class="error-irm-section">`;
+                contentHtml += `<div class="error-irm-title">${section.title}</div>`;
+                
+                if (section.content) {
+                    contentHtml += `<div class="error-irm-content">${section.content}</div>`;
+                }
+                
+                if (section.steps) {
+                    contentHtml += `<ol class="error-irm-steps">`;
+                    section.steps.forEach(step => {
+                        contentHtml += `<li>${step}</li>`;
+                    });
+                    contentHtml += `</ol>`;
+                }
+                
+                contentHtml += `</div>`;
+            });
+            
+            return contentHtml;
+        }
+        
+        function toggleErrorAccordion(errorCode) {
+            const accordion = document.querySelector(`[data-error-code="${errorCode}"]`);
+            if (accordion) {
+                accordion.classList.toggle('expanded');
+            }
+        }
+        
+        function switchErrorTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.error-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.error-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}ErrorsTab`).classList.add('active');
+        }
+        
+        function selectErrorFromList(errorCode, dln) {
+            selectError(errorCode, dln);
+        }
+        
+        function markErrorCorrected(errorCode, dln) {
+            const record = workRecordData[dln];
+            if (!record) return;
+            
+            // Find and update the error status
+            const error = record.errors.find(e => e.code === errorCode);
+            if (error) {
+                error.status = 'Corrected';
+                
+                // Remove error styling from the corresponding form field
+                const errorMapping = errorFieldMapping[errorCode];
+                if (errorMapping && errorMapping.fieldId) {
+                    removeFieldError(errorMapping.fieldId);
+                }
+                
+                // Refresh the error lists
+                populateErrorList(dln);
+                
+                // Clear IRM details if this error was selected
+                clearIRMDetails();
+                clearAllErrorStates();
+            }
+        }
+        
+        function markErrorActive(errorCode, dln) {
+            const record = workRecordData[dln];
+            if (!record) return;
+            
+            // Find and update the error status
+            const error = record.errors.find(e => e.code === errorCode);
+            if (error) {
+                error.status = 'Active';
+                
+                // Apply error styling to the corresponding form field
+                const errorMapping = errorFieldMapping[errorCode];
+                if (errorMapping && errorMapping.fieldId) {
+                    const field = document.getElementById(errorMapping.fieldId);
+                    if (field) {
+                        field.classList.add('error');
+                        addInlineErrorText(field, errorMapping.message);
+                    }
+                }
+                
+                // Refresh the error lists
+                populateErrorList(dln);
+                
+                // Switch to active tab to show the error
+                switchErrorTab('active');
+            }
+        }
+        
+        function clearIRMDetails() {
+            // No longer needed as IRM details are within each accordion
+        }
+        
+        function toggleIRMAccordion() {
+            const header = document.querySelector('.irm-accordion-header');
+            const content = document.getElementById('irmAccordionContent');
+            
+            header.classList.toggle('expanded');
+            content.classList.toggle('expanded');
+        }
+        
+        function populateIRMAccordion(errorCode) {
+            const irmBody = document.getElementById('irmAccordionBody');
+            
+            if (irmGuidance[errorCode]) {
+                const guidance = irmGuidance[errorCode];
+                let contentHtml = `<h4 style="color: #374151; margin-bottom: 1rem; font-size: 0.95rem; font-weight: 600;">${guidance.title}</h4>`;
+                
+                guidance.sections.forEach(section => {
+                    contentHtml += `
+                        <div class="irm-section">
+                            <div class="irm-section-title">${section.title}</div>
+                    `;
+                    
+                    if (section.content) {
+                        contentHtml += `<div class="irm-text">${section.content}</div>`;
+                    }
+                    
+                    if (section.steps) {
+                        contentHtml += `
+                            <ol class="irm-steps">
+                                ${section.steps.map(step => `<li>${step}</li>`).join('')}
+                            </ol>
+                        `;
+                    }
+                    
+                    contentHtml += `</div>`;
+                });
+                
+                irmBody.innerHTML = contentHtml;
+            } else {
+                irmBody.innerHTML = `
+                    <div class="irm-section">
+                        <div class="irm-section-title">Error Code: ${errorCode}</div>
+                        <div class="irm-text">IRM guidance for this error code is not available.</div>
+                    </div>
+                `;
+            }
+        }
+
+        function selectError(errorCode, dln) {
+            // Update the select dropdown to show the selected error
+            const errorSelect = document.getElementById('errorSelect');
+            errorSelect.value = errorCode;
+            
+            // IRM details are now within individual error accordions
+            
+            // Focus on corresponding form field and add error styling
+            const errorMapping = errorFieldMapping[errorCode];
+            
+            if (errorMapping) {
+                const fieldId = errorMapping.fieldId || errorMapping; // Handle both object and string formats
+                const field = document.getElementById(fieldId);
+                const label = document.querySelector(`label[for="${fieldId}"]`) || 
+                             field?.closest('.form-group')?.querySelector('.form-label');
+                
+                if (field) {
+                    // Add error styling (red border)
+                    field.classList.add('error', 'error-highlight');
+                    
+                    if (label) {
+                        label.classList.add('error');
+                    }
+                    
+                    // Focus and scroll to field
+                    field.focus();
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Add inline error text if message exists
+                    if (errorMapping.message) {
+                        addInlineErrorText(field, errorMapping.message);
+                    }
+                    
+                    // Remove highlight animation after it completes but keep red border
+                    setTimeout(() => {
+                        field.classList.remove('error-highlight');
+                    }, 500);
+                }
+            }
+        }
+
+        function updateIRMDetails(errorCode) {
+            // IRM details are now integrated within each error accordion
+        }
+
+        function clearAllErrorStates() {
+            // Remove error classes from all form fields
+            document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(field => {
+                field.classList.remove('error', 'error-highlight');
+            });
+            
+            // Remove error classes from all labels
+            document.querySelectorAll('.form-label').forEach(label => {
+                label.classList.remove('error');
+            });
+        }
+
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const label = document.querySelector(`label[for="${fieldId}"]`) || 
+                         field?.closest('.form-group')?.querySelector('.form-label');
+            
+            if (field) {
+                field.classList.remove('error', 'error-highlight');
+                // Remove inline error text
+                removeInlineErrorText(field);
+            }
+            if (label) {
+                label.classList.remove('error');
+            }
+        }
+
+        function populateFormWithData(dln) {
+            const record = workRecordData[dln];
+            if (!record || !record.form4868Data) return;
+
+            const data = record.form4868Data;
+            
+            // Populate form fields with data
+            if (data.taxpayerName) document.getElementById('taxpayerName').value = data.taxpayerName;
+            if (data.ssn) document.getElementById('ssnEin').value = data.ssn;
+            if (data.address) document.getElementById('address').value = data.address;
+            if (data.taxYear) document.getElementById('taxYear').value = data.taxYear;
+            if (data.filingStatus) document.getElementById('filingStatus').value = data.filingStatus;
+            if (data.extensionType) document.getElementById('extensionType').value = data.extensionType;
+            if (dln) document.getElementById('dlnField').value = dln;
+            if (data.estimatedTaxLiability) document.getElementById('estimatedTaxLiability').value = data.estimatedTaxLiability;
+            if (data.taxPaid) document.getElementById('taxPaid').value = data.taxPaid;
+            if (data.balanceDue) document.getElementById('balanceDue').value = data.balanceDue;
+            if (data.paymentMethod) document.getElementById('paymentMethod').value = data.paymentMethod;
+            if (data.bankAccount) document.getElementById('bankAccount').value = data.bankAccount;
+            if (data.routingNumber) document.getElementById('routingNumber').value = data.routingNumber;
+            if (data.receivedDate) document.getElementById('receivedDate').value = data.receivedDate;
+            if (data.processedDate) document.getElementById('processedDate').value = data.processedDate;
+            if (data.status) document.getElementById('status').value = data.status;
+            if (data.confirmationNumber) document.getElementById('confirmationNumber').value = data.confirmationNumber;
+        }
+
+        function saveForm() {
+            const changes = getFormChanges();
+            
+            if (changes.length > 0) {
+                addChangeNote(changes);
+            }
+            
+            // Update original form data to current values
+            captureFormData();
+            hasUnsavedChanges = false;
+            
+            alert('Form saved successfully!');
+        }
+
+        function captureFormData() {
+            const formFields = [
+                'taxpayerName', 'ssn', 'spouseName', 'spouseSSN', 'address', 'city', 'state', 'zipCode',
+                'filingStatus', 'taxYear', 'agi', 'taxLiability', 'federalTaxWithheld', 'estimatedTaxPaid',
+                'extensionAmount', 'balanceDue', 'refundAmount', 'routingNumber', 'accountNumber',
+                'accountType', 'withdrawalDate', 'confirmationNumber'
+            ];
+            
+            originalFormData = {};
+            formFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    originalFormData[fieldId] = field.value || '';
+                }
+            });
+        }
+
+        function getFormChanges() {
+            const changes = [];
+            const fieldLabels = {
+                'taxpayerName': 'Taxpayer Name',
+                'ssn': 'SSN',
+                'spouseName': 'Spouse Name',
+                'spouseSSN': 'Spouse SSN',
+                'address': 'Address',
+                'city': 'City',
+                'state': 'State',
+                'zipCode': 'ZIP Code',
+                'filingStatus': 'Filing Status',
+                'taxYear': 'Tax Year',
+                'agi': 'Adjusted Gross Income',
+                'taxLiability': 'Tax Liability',
+                'federalTaxWithheld': 'Federal Tax Withheld',
+                'estimatedTaxPaid': 'Estimated Tax Paid',
+                'extensionAmount': 'Extension Amount',
+                'balanceDue': 'Balance Due',
+                'refundAmount': 'Refund Amount',
+                'routingNumber': 'Routing Number',
+                'accountNumber': 'Account Number',
+                'accountType': 'Account Type',
+                'withdrawalDate': 'Withdrawal Date',
+                'confirmationNumber': 'Confirmation Number'
+            };
+            
+            // Check all form fields, not just those in originalFormData
+            const allFormFields = document.querySelectorAll('.form-input, .form-select');
+            allFormFields.forEach(field => {
+                if (field.id && field.id !== 'quickNotes') {
+                    const fieldId = field.id;
+                    const originalValue = originalFormData[fieldId] || '';
+                    const currentValue = field.value || '';
+                    
+                    if (currentValue !== originalValue) {
+                        const fieldLabel = fieldLabels[fieldId] || fieldId;
+                        const oldValue = originalValue || '[blank]';
+                        const newValue = currentValue || '[blank]';
+                        changes.push(`${fieldLabel}: ${oldValue} → ${newValue}`);
+                    }
+                }
+            });
+            
+            return changes;
+        }
+
+        function addChangeNote(changes) {
+            const notesTextarea = document.getElementById('quickNotes');
+            
+            if (!notesTextarea) {
+                console.error('quickNotes textarea not found');
+                return;
+            }
+            
+            const currentNotes = notesTextarea.value;
+            const timestamp = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let changeNote = `${timestamp} - Field Changes:\n`;
+            changes.forEach(change => {
+                changeNote += `${change}\n`;
+            });
+            changeNote += '\n';
+            
+            notesTextarea.value = changeNote + currentNotes;
+        }
+
+        function submitForm() {
+            alert('Form submitted successfully!');
+        }
+
+        function assignForReview() {
+            alert('Work record assigned for review!');
+        }
+
+        function toggleIRMPanel() {
+            const contentContainer = document.querySelector('.content-container');
+            const irmToggleText = document.getElementById('irmToggleText');
+            
+            contentContainer.classList.toggle('irm-open');
+            irmToggleText.textContent = contentContainer.classList.contains('irm-open') ? 'Hide IRM' : 'Show IRM';
+        }
+
+        function openIRMPanel(errorCode) {
+            const irmContent = document.getElementById('irmContent');
+            
+            if (irmGuidance[errorCode]) {
+                const guidance = irmGuidance[errorCode];
+                let contentHtml = `<h4 style="color: #003d6b; margin-bottom: 1rem;">${guidance.title}</h4>`;
+                
+                guidance.sections.forEach(section => {
+                    contentHtml += `
+                        <div class="irm-section">
+                            <div class="irm-section-title">${section.title}</div>
+                    `;
+                    
+                    if (section.content) {
+                        contentHtml += `<div class="irm-text">${section.content}</div>`;
+                    }
+                    
+                    if (section.steps) {
+                        contentHtml += `
+                            <ol class="irm-steps">
+                                ${section.steps.map(step => `<li>${step}</li>`).join('')}
+                            </ol>
+                        `;
+                    }
+                    
+                    contentHtml += `</div>`;
+                });
+                
+                irmContent.innerHTML = contentHtml;
+            } else {
+                irmContent.innerHTML = `
+                    <div class="irm-section">
+                        <div class="irm-section-title">Error Code: ${errorCode}</div>
+                        <div class="irm-text">IRM guidance for this error code is not available.</div>
+                    </div>
+                `;
+            }
+        }
+
+        function closeIRMPanel() {
+            const irmPanel = document.getElementById('irmPanel');
+            
+            irmPanel.classList.remove('active');
+        }
+
+        function openRRDModal() {
+            document.getElementById('rrdModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Actions Dropdown Functions
+        function toggleActionsDropdown() {
+            const menu = document.getElementById('actionsMenu');
+            menu.classList.toggle('show');
+        }
+
+        function assignToTaxExaminer() {
+            const currentDLN = selectedRecord;
+            if (confirm(`Assign record ${currentDLN} to Tax Examiner?`)) {
+                console.log('Assigning record to Tax Examiner:', currentDLN);
+                alert('Record assigned to Tax Examiner successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            }
+        }
+
+        function assignToMe() {
+            const currentDLN = selectedRecord;
+            if (confirm(`Assign record ${currentDLN} to yourself?`)) {
+                console.log('Assigning record to current user:', currentDLN);
+                alert('Record assigned to you successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            }
+        }
+
+        function approveRecord() {
+            const currentDLN = selectedRecord;
+            if (confirm(`Approve record ${currentDLN}?`)) {
+                console.log('Approving record:', currentDLN);
+                alert('Record approved successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            }
+        }
+
+
+        function assignForQRReviewSingle() {
+            const currentDLN = selectedRecord;
+            if (confirm(`Assign record ${currentDLN} for QR review?`)) {
+                console.log('Assigning record for QR review:', currentDLN);
+                alert('Record assigned for QR review successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            }
+        }
+
+        function suspendRecord() {
+            const currentDLN = selectedRecord;
+            const reason = prompt('Please enter suspension reason:');
+            if (reason && reason.trim()) {
+                console.log('Suspending record:', currentDLN, 'Reason:', reason);
+                alert('Record suspended successfully!');
+                document.getElementById('actionsMenu').classList.remove('show');
+            } else if (reason !== null) {
+                alert('Suspension reason is required.');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.actions-dropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                const menu = document.getElementById('actionsMenu');
+                if (menu) {
+                    menu.classList.remove('show');
+                }
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Track form changes
+        function applyErrorStyling(dln) {
+            const record = workRecordData[dln];
+            if (!record) return;
+            
+            // Clear any existing error styling first
+            document.querySelectorAll('.form-input.error').forEach(field => {
+                field.classList.remove('error');
+            });
+            document.querySelectorAll('.form-section.has-errors').forEach(section => {
+                section.classList.remove('has-errors');
+            });
+            
+            // Track which sections have errors
+            const sectionsWithErrors = new Set();
+            
+            // Apply error styling to fields
+            record.errors.forEach(error => {
+                const errorMapping = errorFieldMapping[error.code];
+                if (errorMapping) {
+                    const field = document.getElementById(errorMapping.fieldId);
+                    if (field) {
+                        field.classList.add('error');
+                        
+                        // Add inline error text
+                        addInlineErrorText(field, errorMapping.message);
+                        
+                        // Determine which section this field belongs to
+                        const section = field.closest('.form-section');
+                        if (section) {
+                            sectionsWithErrors.add(section);
+                        }
+                    }
+                }
+            });
+            
+            // Apply error styling to sections
+            sectionsWithErrors.forEach(section => {
+                section.classList.add('has-errors');
+            });
+            
+            // Update section status pills
+            updateSectionStatusPills();
+        }
+        
+        function addInlineErrorText(field, message) {
+            // Remove existing error text
+            removeInlineErrorText(field);
+            
+            const formGroup = field.closest('.form-group');
+            if (formGroup) {
+                const errorText = document.createElement('div');
+                errorText.className = 'field-error-text';
+                errorText.textContent = message;
+                errorText.setAttribute('data-error-text', 'true');
+                
+                // Insert error text after the field
+                field.parentNode.insertBefore(errorText, field.nextSibling);
+            }
+        }
+        
+        function removeInlineErrorText(field) {
+            const formGroup = field.closest('.form-group');
+            if (formGroup) {
+                const existingErrorText = formGroup.querySelector('.field-error-text');
+                if (existingErrorText) {
+                    existingErrorText.remove();
+                }
+            }
+        }
+        
+        function removeFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.classList.remove('error');
+                
+                // Remove inline error text
+                removeInlineErrorText(field);
+                
+                // Check if section still has other error fields
+                const section = field.closest('.form-section');
+                if (section) {
+                    const errorFieldsInSection = section.querySelectorAll('.form-input.error');
+                    if (errorFieldsInSection.length === 0) {
+                        section.classList.remove('has-errors');
+                    }
+                }
+                
+                // Update section status pills
+                updateSectionStatusPills();
+            }
+        }
+        
+        function updateSectionStatusPills() {
+            const sections = document.querySelectorAll('.form-section');
+            
+            sections.forEach(section => {
+                const title = section.querySelector('.form-section-title');
+                if (!title) return;
+                
+                // Remove existing pill
+                const existingPill = title.querySelector('.section-status-pill');
+                if (existingPill) {
+                    existingPill.remove();
+                }
+                
+                // Check for error fields in this section
+                const errorFields = section.querySelectorAll('.form-input.error');
+                
+                // Create new pill
+                const pill = document.createElement('span');
+                pill.className = 'section-status-pill';
+                
+                if (errorFields.length > 0) {
+                    pill.classList.add('error');
+                    pill.textContent = `${errorFields.length} Error${errorFields.length > 1 ? 's' : ''}`;
+                } else {
+                    // Check if this section has any form fields at all
+                    const allFields = section.querySelectorAll('.form-input, .form-select, .form-textarea');
+                    if (allFields.length > 0) {
+                        pill.classList.add('corrected');
+                        pill.textContent = 'Complete';
+                    } else {
+                        pill.classList.add('no-errors');
+                        pill.textContent = 'No Fields';
+                    }
+                }
+                
+                title.appendChild(pill);
+            });
+        }
+        
+        function setupFormChangeTracking() {
+            const formFields = document.querySelectorAll('.form-input, .form-select, .form-textarea');
+            
+            formFields.forEach(field => {
+                if (field.id !== 'quickNotes') { // Don't track notes field
+                    field.addEventListener('input', () => {
+                        hasUnsavedChanges = true;
+                        
+                        // Only remove error styling when field has valid content
+                        if (field.classList.contains('error') && isFieldValid(field)) {
+                            removeFieldError(field.id);
+                        }
+                    });
+                    field.addEventListener('change', () => {
+                        hasUnsavedChanges = true;
+                        
+                        // Only remove error styling when field has valid content
+                        if (field.classList.contains('error') && isFieldValid(field)) {
+                            removeFieldError(field.id);
+                        }
+                    });
+                }
+            });
+        }
+        
+        function isFieldValid(field) {
+            // Basic validation - field should have content and not be empty
+            const value = field.value.trim();
+            
+            // For SSN fields, check basic format
+            if (field.id === 'ssn' || field.id === 'spouseSSN') {
+                return value.length > 0 && (value.includes('-') || value.length >= 9);
+            }
+            
+            // For tax year, check it's a valid 4-digit year
+            if (field.id === 'taxYear') {
+                return /^\d{4}$/.test(value) && parseInt(value) >= 2020 && parseInt(value) <= 2030;
+            }
+            
+            // For balance due and other numeric fields
+            if (field.type === 'number' || field.id.includes('balance') || field.id.includes('tax') || field.id.includes('amount')) {
+                return value.length > 0 && !isNaN(parseFloat(value));
+            }
+            
+            // For other fields, just check they're not empty
+            return value.length > 0;
+        }
+
+        // User menu functionality
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            if (!userMenu.contains(event.target)) {
+                document.getElementById('userMenu').classList.remove('show');
+            }
+        });
+
+        // Initialize page when loaded
+        window.onload = function() {
+            initializePage();
+            captureFormData();
+            setupFormChangeTracking();
+        };
+    </script>
+</body>
+</html>
