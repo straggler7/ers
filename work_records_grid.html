@@ -129,7 +129,7 @@
             grid-template-columns: 250px 1fr;
             gap: 1rem;
             padding: 1rem;
-            max-width: 1900px;
+            /* max-width: 1900px; */
             margin: 0 auto;
             height: calc(100vh - 80px);
         }
@@ -472,6 +472,172 @@
             font-size: 0.8rem;
         }
 
+        /* Header Filter Styles */
+        .header-labels th {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+            color: #374151;
+            padding: 1rem 0.75rem;
+        }
+
+        .header-filters th {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            vertical-align: middle;
+        }
+
+        .header-filters input[type="text"] {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .header-filters input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .header-filters input[type="text"]::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .header-filters select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .header-filters select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .clear-all-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+
+        .clear-all-btn:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+            color: #374151;
+            transform: translateY(-1px);
+        }
+
+        .clear-all-btn:active {
+            transform: translateY(0);
+        }
+
+        .clear-all-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Toolbar Search Filters */
+        .search-input {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            min-width: 280px;
+            margin-left: 0.5rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .search-select {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            min-width: 140px;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .search-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Search Controls - Legacy (now removed) */
+        .search-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .search-group input,
+        .search-group select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-group input:focus,
+        .search-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .clear-search-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: fit-content;
+        }
+
+        .clear-search-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
         .grid-container {
             overflow-x: auto;
             flex: 1;
@@ -504,12 +670,16 @@
             transition: background-color 0.2s ease;
         }
 
-        .work-grid tbody tr:hover {
+        .work-grid tbody tr:nth-child(even) {
             background-color: #f8f9fa;
         }
 
-        .work-grid tbody tr.selected {
+        .work-grid tbody tr:hover {
             background-color: #e3f2fd;
+        }
+
+        .work-grid tbody tr.selected {
+            background-color: #cce5ff;
         }
 
         .status-badge {
@@ -533,6 +703,12 @@
             background-color: #d1edff;
             color: #0c5460;
         }
+
+        .status-suspended {
+            background-color: #d1edff;
+            color: #dc3545;
+        }
+
 
         .priority-high {
             color: #dc3545;
@@ -969,6 +1145,23 @@
             <div class="toolbar">
                 <div class="toolbar-left">
                     <button class="btn" onclick="refreshGrid()">Refresh</button>
+                    <input type="text" id="searchAll" class="btn search-input" placeholder="Search ID, DLN, Form Type, Tax Period..." onkeyup="performSearch()">
+                    <select id="searchAssignedTo" class="btn search-select" onchange="performSearch()">
+                        <option value="">All Assignees</option>
+                        <option value="Unassigned">Unassigned</option>
+                        <option value="Thompson, Sarah">Thompson, Sarah</option>
+                        <option value="Garcia, Maria">Garcia, Maria</option>
+                        <option value="Davis, Robert">Davis, Robert</option>
+                        <option value="Wilson, Jennifer">Wilson, Jennifer</option>
+                        <option value="Brown, Michael">Brown, Michael</option>
+                    </select>
+                    <select id="searchStatus" class="btn search-select" onchange="performSearch()">
+                        <option value="">All Status</option>
+                        <option value="New">New</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="QR Review">QR Review</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
                 </div>
                 <div class="toolbar-right">
                     <div class="actions-dropdown">
@@ -1005,12 +1198,12 @@
                                 </svg>
                                 Assign for QR Review
                             </button>
-                            <button class="actions-menu-item" onclick="approveSelected()">
+                            <!-- <button class="actions-menu-item" onclick="approveSelected()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20,6 9,17 4,12"></polyline>
                                 </svg>
                                 QR Approve
-                            </button>
+                            </button> -->
                             <button class="actions-menu-item" onclick="suspendSelected()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"></circle>
@@ -1024,6 +1217,7 @@
                 </div>
             </div>
 
+
             <div class="grid-container">
                 <table class="work-grid">
                     <thead>
@@ -1031,12 +1225,15 @@
                             <th><input type="checkbox" id="selectAll"></th>
                             <th>ID</th>
                             <th>DLN</th>
+                            <th>Service Center</th>
                             <th>Form Type</th>
+                            <th>Return Type</th>
                             <th>Tax Period</th>
                             <th>Errors</th>
                             <th>Status</th>
                             <th>Assigned To</th>
-                            <th>Received Date</th>
+                            <th>Control Day</th>
+                            <!-- <th>Received Date</th> -->
                             <th>Updated Date</th>
                         </tr>
                     </thead>
@@ -1045,169 +1242,211 @@
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>ABCD90210</td>
                             <td>00217-102-05701-4</td>
+                            <td>Ogden</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
                             <td>Error Code 004, Error Code 107</td>
                             <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
-                            <td>2024-04-15</td>
+                            <td>2025-106</td>
+                            <!-- <td>2024-04-15</td> -->
                             <td>2024-08-12</td>
                         </tr>
                         <tr onclick="navigateToDetails('00218-103-05702-5')" data-dln="00218-103-05702-5">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>EFGH34567</td>
                             <td>00218-103-05702-5</td>
+                            <td>Austin</td>
                             <td>Form 4868</td>
+                            <td>Paper</td>
                             <td>2025</td>
                             <td>Missing TIN</td>
                             <td><span class="status-badge status-in-progress">Assigned</span></td>
                             <td>Thompson, Sarah</td>
-                            <td>2024-03-28</td>
+                            <td>2025-088</td>
+                            <!-- <td>2024-03-28</td> -->
                             <td>2024-08-14</td>
                         </tr>
                         <tr onclick="navigateToDetails('00219-104-05703-6')" data-dln="00219-104-05703-6">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>IJKL78901</td>
                             <td>00219-104-05703-6</td>
+                            <td>Fresno</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
                             <td>Field 01ED, Error Code 107, Missing TIN</td>
                             <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
-                            <td>2024-04-10</td>
-                            <td>2024-08-13</td>
+                            <td>2025-123</td>
+                            <!-- <td>2024-05-02</td> -->
+                            <td>2024-08-15</td>
                         </tr>
                         <tr onclick="navigateToDetails('00220-105-05704-7')" data-dln="00220-105-05704-7">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>MNOP12345</td>
                             <td>00220-105-05704-7</td>
+                            <td>Kansas City</td>
                             <td>Form 4868</td>
+                            <td>Paper</td>
                             <td>2025</td>
                             <td>Error Code 004</td>
                             <td><span class="status-badge status-resolved">QR Review</span></td>
                             <td>Garcia, Maria</td>
-                            <td>2024-04-02</td>
+                            <td>2025-093</td>
+                            <!-- <td>2024-04-02</td> -->
                             <td>2024-08-10</td>
                         </tr>
                         <tr onclick="navigateToDetails('00221-106-05705-8')" data-dln="00221-106-05705-8">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>QRST56789</td>
                             <td>00221-106-05705-8</td>
+                            <td>Memphis</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
                             <td>Field 01ED, Missing TIN</td>
                             <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
-                            <td>2024-04-18</td>
+                            <td>2025-109</td>
+                            <!-- <td>2024-04-18</td> -->
                             <td>2024-08-11</td>
                         </tr>
                         <tr onclick="navigateToDetails('00222-107-05706-9')" data-dln="00222-107-05706-9">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>UVWX98765</td>
                             <td>00222-107-05706-9</td>
+                            <td>Ogden</td>
                             <td>Form 4868</td>
+                            <td>Paper</td>
                             <td>2025</td>
                             <td>Error Code 004, Missing TIN</td>
                             <td><span class="status-badge status-in-progress">Assigned</span></td>
                             <td>Davis, Robert</td>
-                            <td>2024-04-20</td>
+                            <td>2025-111</td>
+                            <!-- <td>2024-04-20</td> -->
                             <td>2024-08-15</td>
                         </tr>
                         <tr onclick="navigateToDetails('00223-108-05707-0')" data-dln="00223-108-05707-0">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>YZAB43210</td>
                             <td>00223-108-05707-0</td>
+                            <td>Austin</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
                             <td>Field 01ED, Error Code 107</td>
                             <td><span class="status-badge status-resolved">QR Review</span></td>
                             <td>Wilson, Jennifer</td>
-                            <td>2024-04-05</td>
+                            <td>2025-096</td>
+                            <!-- <td>2024-04-05</td> -->
                             <td>2024-08-09</td>
                         </tr>
                         <tr onclick="navigateToDetails('00224-109-05708-1')" data-dln="00224-109-05708-1">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>CDEF87654</td>
                             <td>00224-109-05708-1</td>
+                            <td>Fresno</td>
                             <td>Form 4868</td>
+                            <td>Paper</td>
                             <td>2025</td>
                             <td>Missing TIN, Error Code 004</td>
                             <td><span class="status-badge status-open">New</span></td>
                             <td>Unassigned</td>
-                            <td>2024-04-22</td>
+                            <td>2025-113</td>
+                            <!-- <td>2024-04-22</td> -->
                             <td>2024-08-16</td>
                         </tr>
                         <tr onclick="navigateToDetails('00225-110-05709-2')" data-dln="00225-110-05709-2">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>GHIJ21098</td>
                             <td>00225-110-05709-2</td>
+                            <td>Kansas City</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
                             <td>Field 01ED</td>
                             <td><span class="status-badge status-in-progress">Assigned</span></td>
                             <td>Brown, Michael</td>
-                            <td>2024-04-12</td>
+                            <td>2025-103</td>
+                            <!-- <td>2024-04-12</td> -->
                             <td>2024-08-08</td>
                         </tr>
                         <tr onclick="navigateToDetails('00226-111-05710-3')" data-dln="00226-111-05710-3">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>KLMN65432</td>
                             <td>00226-111-05710-3</td>
+                            <td>Fresno</td>
                             <td>Form 4868</td>
+                            <td>Paper</td>
                             <td>2025</td>
                             <td>Error Code 107, Missing TIN</td>
                             <td><span class="status-badge status-resolved">QR Review</span></td>
-                            <td>Anderson, Lisa</td>
-                            <td>2024-04-08</td>
-                            <td>2024-08-07</td>
+                            <td>Davis, Sarah</td>
+                            <td>2025-105</td>
+                            <!-- <td>2024-04-15</td> -->
+                            <td>2024-08-10</td>
                         </tr>
                         <tr onclick="navigateToDetails('00227-112-05711-4')" data-dln="00227-112-05711-4">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                            <td>OPQR09876</td>
+                            <td>OPQR98765</td>
                             <td>00227-112-05711-4</td>
+                            <td>Memphis</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
-                            <td>Error Code 004, Field 01ED</td>
-                            <td><span class="status-badge status-open">New</span></td>
-                            <td>Unassigned</td>
-                            <td>2024-04-25</td>
-                            <td>2024-08-18</td>
+                            <td>Error Code 108, Invalid Date</td>
+                            <td><span class="status-badge status-suspended">Suspended</span></td>
+                            <td>Wilson, James</td>
+                            <td>2025-108</td>
+                            <!-- <td>2024-04-18</td> -->
+                            <td>2024-08-12</td>
                         </tr>
                         <tr onclick="navigateToDetails('00228-113-05712-5')" data-dln="00228-113-05712-5">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>STUV54321</td>
                             <td>00228-113-05712-5</td>
+                            <td>Ogden</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
-                            <td>Missing TIN</td>
-                            <td><span class="status-badge status-in-progress">Assigned</span></td>
-                            <td>Taylor, James</td>
-                            <td>2024-04-14</td>
+                            <td>Error Code 108, Invalid Date</td>
+                            <td><span class="status-badge status-suspended">Suspended</span></td>
+                            <td>Wilson, James</td>
+                            <td>2025-108</td>
+                            <!-- <td>2024-04-18</td> -->
                             <td>2024-08-12</td>
                         </tr>
                         <tr onclick="navigateToDetails('00229-114-05713-6')" data-dln="00229-114-05713-6">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>WXYZ98765</td>
                             <td>00229-114-05713-6</td>
+                            <td>Ogden</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
-                            <td>Error Code 107, Field 01ED, Missing TIN</td>
-                            <td><span class="status-badge status-resolved">QR Review</span></td>
-                            <td>Martinez, Carlos</td>
-                            <td>2024-04-03</td>
-                            <td>2024-08-06</td>
+                            <td>Error Code 108, Invalid Date</td>
+                            <td><span class="status-badge status-suspended">Suspended</span></td>
+                            <td>Wilson, James</td>
+                            <td>2025-108</td>
+                            <!-- <td>2024-04-18</td> -->
+                            <td>2024-08-12</td>
                         </tr>
                         <tr onclick="navigateToDetails('00230-115-05714-7')" data-dln="00230-115-05714-7">
                             <td><input type="checkbox" onclick="event.stopPropagation()"></td>
                             <td>ABCD13579</td>
                             <td>00230-115-05714-7</td>
+                            <td>Ogden</td>
                             <td>Form 4868</td>
+                            <td>Electronic</td>
                             <td>2025</td>
-                            <td>Error Code 004</td>
-                            <td><span class="status-badge status-open">New</span></td>
-                            <td>Unassigned</td>
-                            <td>2024-04-28</td>
-                            <td>2024-08-20</td>
+                            <td>Error Code 108, Invalid Date</td>
+                            <td><span class="status-badge status-suspended">Suspended</span></td>
+                            <td>Wilson, James</td>
+                            <td>2025-108</td>
+                            <!-- <td>2024-04-18</td> -->
+                            <td>2024-08-12</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2683,21 +2922,61 @@
                 }
             });
             
-            currentFilter = status;
-            currentPage = 1; // Reset to first page
+            currentFilter = `status-${status}`;
+            currentPage = 1;
             updatePagination();
         }
-        
-        // Initialize pagination when page loads
-        window.addEventListener('DOMContentLoaded', function() {
-            initializePagination();
-        });
-        
-        // User menu functionality
-        function toggleUserMenu() {
-            const menu = document.getElementById('userMenu');
-            menu.classList.toggle('show');
+
+        // Search functionality
+        function performSearch() {
+            const searchAll = document.getElementById('searchAll').value.toLowerCase();
+            const searchStatus = document.getElementById('searchStatus').value;
+            const searchAssignedTo = document.getElementById('searchAssignedTo').value;
+
+            filteredRows = allRows.filter(row => {
+                const cells = row.cells;
+                const id = cells[1].textContent.toLowerCase();
+                const dln = cells[2].textContent.toLowerCase();
+                const formType = cells[4].textContent.toLowerCase();
+                const taxPeriod = cells[6].textContent.toLowerCase();
+                const statusBadge = cells[8].querySelector('.status-badge');
+                const status = statusBadge ? statusBadge.textContent.trim() : '';
+                const assignedTo = cells[9].textContent.trim();
+
+                // Check if search text matches any of the searchable fields
+                const matchesText = searchAll === '' || 
+                    id.includes(searchAll) || 
+                    dln.includes(searchAll) || 
+                    formType.includes(searchAll) || 
+                    taxPeriod.includes(searchAll);
+
+                return (
+                    matchesText &&
+                    (searchStatus === '' || status === searchStatus) &&
+                    (searchAssignedTo === '' || assignedTo === searchAssignedTo)
+                );
+            });
+
+            currentFilter = 'search';
+            currentPage = 1;
+            updatePagination();
         }
+
+        function clearSearch() {
+            document.getElementById('searchAll').value = '';
+            document.getElementById('searchStatus').value = '';
+            document.getElementById('searchAssignedTo').value = '';
+            
+            filteredRows = [...allRows];
+            currentFilter = null;
+            currentPage = 1;
+            updatePagination();
+        }
+
+        // Initialize page when loaded
+        window.onload = function() {
+            initializePagination();
+        };
 
         // Close user menu when clicking outside
         document.addEventListener('click', function(event) {
