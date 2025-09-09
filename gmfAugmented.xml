@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UITP-Submission xmlns:ns1="http://www.irs.gov/efile"
+  xmlns="GMFModInput.xsd">
+  <GMFAugmentedData>
+    <FormElements>
+      <FormElement name="primarySSN" value="101010101" ERSEditable="true" xpath="String" />
+      <FormElement name="dollarAmount" value="10.99" ERSEditable="true" xpath="String" />
+    </FormElements>
+
+    <GMFErrors>
+      <GMFError Id="101" Description="Incorrect Primary SSN" />
+      <GMFError Id="102" Description="Incorrect Dollar Value" />
+    </GMFErrors>
+  </GMFAugmentedData>
+
+  <SubmissionData>
+    <GMFModForm4868>
+      <NAPEIFNameCtrlUndrprt>String</NAPEIFNameCtrlUndrprt>
+      <EIFAccessInd>String</EIFAccessInd>
+      <NAPAccessInd>String</NAPAccessInd>
+      <NAPEIFResponseInd>String</NAPEIFResponseInd>
+      <PrimaryTINAutoTinCorr>String</PrimaryTINAutoTinCorr>
+      <CodeAndEditEmployeeNum>0</CodeAndEditEmployeeNum>
+      <NAPTINValCkReqCnt>0</NAPTINValCkReqCnt>
+      <NAPTINValCkRspnsCnt>0</NAPTINValCkRspnsCnt>
+      <CodeAndEditEmploveeNum>0</CodeAndEditEmploveeNum>
+      <MeFReceiptDate>2001-12-17T09:30:47Z</MeFReceiptDate>
+      <MftCd>String</MftCd>
+      <PrimaryTransCd>String</PrimaryTransCd>
+      <SecondaryTransCd>String</SecondaryTransCd>
+      <NAPAccessInd2>String</NAPAccessInd2>
+      <SecondaryTransAmt>0</SecondaryTransAmt>
+      <NameCtrlUnderprint>String</NameCtrlUnderprint>
+      <NAPEIFResponseInd2>String</NAPEIFResponseInd2>
+    </GMFModForm4868>
+
+  </SubmissionData>
+</UITP-Submission>

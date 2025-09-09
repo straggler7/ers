@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MockAPIResponses>
+    <!-- Successful Submission -->
+    <Response>
+        <status>200</status>
+        <headers>
+            <Content-Type>application/xml</Content-Type>
+            <X-Request-ID>req_123456</X-Request-ID>
+            <X-RateLimit-Limit>100</X-RateLimit-Limit>
+            <X-RateLimit-Remaining>99</X-RateLimit-Remaining>
+        </headers>
+        <body>
+            <Form4868Response>
+                <status>success</status>
+                <submissionId>FORM4868-2024-1001</submissionId>
+                <timestamp>2024-09-09T10:45:00-04:00</timestamp>
+                <formData>
+                    <form_id>4868</form_id>
+                    <tax_year>2024</tax_year>
+                    <identification>
+                        <first_name>JOHN</first_name>
+                        <last_name>DOE</last_name>
+                        <ssn>***-**-6789</ssn>
+                    </identification>
+                    <acknowledgmentNumber>ACK20240909104500</acknowledgmentNumber>
+                    <confirmationNumber>CNF20240909104500</confirmationNumber>
+                    <receivedDate>2024-09-09</receivedDate>
+                    <processingStatus>PENDING</processingStatus>
+                </formData>
+            </Form4868Response>
+        </body>
+    </Response>
+
+    <!-- Validation Error -->
+    <Response>
+        <status>400</status>
+        <headers>
+            <Content-Type>application/xml</Content-Type>
+            <X-Request-ID>req_123457</X-Request-ID>
+            <X-RateLimit-Limit>100</X-RateLimit-Limit>
+            <X-RateLimit-Remaining>98</X-RateLimit-Remaining>
+        </headers>
+        <body>
+            <Form4868Response>
+                <status>error</status>
+                <submissionId>FORM4868-2024-1002</submissionId>
+                <timestamp>2024-09-09T10:46:15-04:00</timestamp>
+                <errors>
+                    <error>
+                        <code>INVALID_FIELD</code>
+                        <field>ssn</field>
+                        <message>Invalid SSN format</message>
+                        <severity>ERROR</severity>
+                    </error>
+                    <error>
+                        <code>INVALID_FIELD</code>
+                        <field>zip_code</field>
+                        <message>Zip code must be 5 digits</message>
+                        <severity>ERROR</severity>
+                    </error>
+                </errors>
+                <formData>
+                    <form_id>4868</form_id>
+                    <tax_year>2024</tax_year>
+                    <identification>
+                        <first_name>JANE</first_name>
+                        <last_name>SMITH</last_name>
+                        <ssn>123-45-67</ssn>
+                        <address>
+                            <zip_code>1234</zip_code>
+                        </address>
+                    </identification>
+                </formData>
+            </Form4868Response>
+        </body>
+    </Response>
+
+    <!-- System Error -->
+    <Response>
+        <status>500</status>
+        <headers>
+            <Content-Type>application/xml</Content-Type>
+            <X-Request-ID>req_123458</X-Request-ID>
+            <X-RateLimit-Limit>100</X-RateLimit-Limit>
+            <X-RateLimit-Remaining>97</X-RateLimit-Remaining>
+            <Retry-After>60</Retry-After>
+        </headers>
+        <body>
+            <Form4868Response>
+                <status>error</status>
+                <submissionId>FORM4868-2024-1003</submissionId>
+                <timestamp>2024-09-09T10:47:30-04:00</timestamp>
+                <errors>
+                    <error>
+                        <code>SYSTEM_ERROR</code>
+                        <message>Internal server error</message>
+                        <referenceId>ERR-20240909-104730-001</referenceId>
+                        <severity>FATAL</severity>
+                    </error>
+                </errors>
+            </Form4868Response>
+        </body>
+    </Response>
+
+    <!-- Successful Submission with Warnings -->
+    <Response>
+        <status>200</status>
+        <headers>
+            <Content-Type>application/xml</Content-Type>
+            <X-Request-ID>req_123459</X-Request-ID>
+            <X-RateLimit-Limit>100</X-RateLimit-Limit>
+            <X-RateLimit-Remaining>96</X-RateLimit-Remaining>
+        </headers>
+        <body>
+            <Form4868Response>
+                <status>success</status>
+                <submissionId>FORM4868-2024-1004</submissionId>
+                <timestamp>2024-09-09T10:48:45-04:00</timestamp>
+                <warnings>
+                    <warning>
+                        <code>LATE_SUBMISSION</code>
+                        <message>Form submitted after the deadline</message>
+                        <severity>WARNING</severity>
+                    </warning>
+                    <warning>
+                        <code>ESTIMATED_TAX</code>
+                        <message>Estimated tax payment is below the expected amount</message>
+                        <severity>WARNING</severity>
+                    </warning>
+                </warnings>
+                <formData>
+                    <form_id>4868</form_id>
+                    <tax_year>2024</tax_year>
+                    <identification>
+                        <first_name>MICHAEL</first_name>
+                        <last_name>JOHNSON</last_name>
+                        <ssn>***-**-9876</ssn>
+                    </identification>
+                    <acknowledgmentNumber>ACK20240909104845</acknowledgmentNumber>
+                    <confirmationNumber>CNF20240909104845</confirmationNumber>
+                    <receivedDate>2024-09-09</receivedDate>
+                    <processingStatus>PENDING_REVIEW</processingStatus>
+                </formData>
+            </Form4868Response>
+        </body>
+    </Response>
+</MockAPIResponses>
