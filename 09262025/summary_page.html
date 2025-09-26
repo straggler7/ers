@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRS Error Resolution Application - Daily Summary</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003d6b 0%, #0066cc 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .user-menu-dropdown.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .user-menu-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            padding: 1rem;
+            margin: 0;
+            height: calc(100vh - 60px);
+            width: 100%;
+        }
+
+        .top-toolbar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f3f4;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding-right: 1rem;
+        }
+
+        .toolbar-center {
+            flex: 1;
+            text-align: left;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #212529;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+
+        .back-button::before {
+            content: '←';
+            margin-right: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            align-self: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-link:hover {
+            color: #0066cc;
+        }
+
+        .summary-header-clean {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 0.75rem 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #f1f3f4;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .export-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .export-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            height: 100%;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .summary-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            border: 1px solid #f1f3f4;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-date {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .programs-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.25rem;
+            border: 1px solid #f1f3f4;
+            /* height: fit-content; */
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin: 1rem;
+        }
+
+        .program-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            /* max-height: 400px; */
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .program-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .program-card:hover {
+            border-color: #0066cc;
+            box-shadow: 0 2px 4px rgba(0, 102, 204, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .program-card.selected {
+            border-color: #0066cc;
+            background: #f0f8ff;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+        }
+
+        .program-number {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin-bottom: 1rem;
+        }
+
+        .program-search {
+            margin-bottom: 2rem;
+        }
+        
+        .program-search .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .program-search .search-input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .program-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .details-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.25rem;
+            border: 1px solid #f1f3f4;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .program-badge {
+            display: inline-block;
+            background: rgb(15, 80, 126);
+            color: white;
+            padding: 0.375rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #bbdefb;
+        }
+
+        .dln-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .dln-search {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 6px;
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: #0066cc;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .dln-table-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dln-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .dln-table th {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .dln-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .dln-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .dln-table tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .dln-table tbody tr:nth-child(even):hover {
+            background: #f8fafc;
+        }
+
+        .dln-number-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .status-cell {
+            font-weight: 500;
+        }
+
+        .status-resolved {
+            color: #059669;
+        }
+
+        .status-pending {
+            color: #dc2626;
+        }
+
+        .action-cell {
+            text-align: center;
+        }
+
+        .reopen-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination-btn {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .dln-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0.75rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 300px);
+            padding-right: 0.5rem;
+        }
+
+        .dln-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .dln-item:hover {
+            border-color: #0066cc;
+            box-shadow: 0 2px 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .dln-number {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #374151;
+            background: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .grid-view {
+            display: block;
+        }
+
+        .table-view {
+            display: none;
+        }
+
+        .view-table .grid-view {
+            display: none;
+        }
+
+        .view-table .table-view {
+            display: block;
+        }
+
+        .reopen-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .btn-primary:hover {
+            background-color: #0052a3;
+            border-color: #0052a3;
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .content-area {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .programs-section {
+                margin-bottom: 1rem;
+            }
+            
+            .program-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .program-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .dln-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dln-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>IRS Error Resolution Application</h1>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Sarah Thompson</div>
+                    <div class="user-role">Tax Examiner</div>
+                </div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenu">
+                        <a href="#" class="user-menu-item">Profile Settings</a>
+                        <a href="#" class="user-menu-item">Change Password</a>
+                        <hr class="user-menu-divider">
+                        <a href="#" class="user-menu-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="summary-header-clean">
+            <div class="page-header">
+                <a href="landing_page.html" class="back-link">← Back to Landing</a>
+                <h1 class="summary-title">Daily Summary: Sarah Thompson</h1>
+                <p class="summary-date">Date: <span id="currentDate"></span></p>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="summary-header" style="display: none;">
+                <h1 class="summary-title">Daily Summary: Sarah Thompson</h1>
+                <p class="summary-date">Date: <span id="currentDate"></span></p>
+            </div>
+
+            <div class="programs-section">
+                <h2 class="section-title">Programs Worked</h2>
+                <div class="program-search">
+                    <input type="text" class="search-input" placeholder="Search by program code (e.g., ISRP, BMF)..." id="programSearch" onkeyup="filterPrograms()">
+                </div>
+                <div class="program-cards">
+                    <div class="program-card" onclick="selectProgram('ISRP')">
+                        <div class="program-number">Program: ISRP</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">100</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Time Spent:</span>
+                                <span class="stat-value">4 hours</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="program-card" onclick="selectProgram('BMF')">
+                        <div class="program-number">Program: BMF</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">75</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">68</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('ERC')">
+                        <div class="program-number">Program: ERC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">45</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">42</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('ACTC')">
+                        <div class="program-number">Program: ACTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">32</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">28</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">4</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('CTC')">
+                        <div class="program-number">Program: CTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">28</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">25</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('EITC')">
+                        <div class="program-number">Program: EITC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">89</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">81</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('AOTC')">
+                        <div class="program-number">Program: AOTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">15</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">14</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('PTC')">
+                        <div class="program-number">Program: PTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">22</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">19</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('CDCC')">
+                        <div class="program-number">Program: CDCC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">38</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">35</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('RCTC')">
+                        <div class="program-number">Program: RCTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">12</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">11</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('LLCTC')">
+                        <div class="program-number">Program: LLCTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">7</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">6</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('HCTC')">
+                        <div class="program-number">Program: HCTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">19</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">17</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="program-card" onclick="selectProgram('OSTC')">
+                        <div class="program-number">Program: OSTC</div>
+                        <div class="program-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Volume Worked:</span>
+                                <span class="stat-value">24</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Resolved:</span>
+                                <span class="stat-value">22</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Suspended:</span>
+                                <span class="stat-value">2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <div class="details-header">
+                    <!-- <h2 class="section-title">Details View</h2> -->
+                    <span class="program-badge">Program: ISRP</span>
+                </div>
+
+                <div class="dln-controls">
+                    <div class="dln-search">
+                        <input type="text" class="search-input" placeholder="Search DLN numbers..." id="dlnSearch" onkeyup="filterDLNs()">
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="switchView('grid')">Grid</button>
+                        <button class="view-btn" onclick="switchView('table')">Table</button>
+                    </div>
+                </div>
+
+                <div class="grid-view">
+                    <div class="dln-grid" id="dlnGrid">
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 12345-678-90123-4</span>
+                            <button class="reopen-btn" onclick="reopenDLN('12345-678-90123-4')">Re-open</button>
+                        </div>
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 23456-789-01234-5</span>
+                            <button class="reopen-btn" onclick="reopenDLN('23456-789-01234-5')">Re-open</button>
+                        </div>
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 34567-890-12345-6</span>
+                            <button class="reopen-btn" onclick="reopenDLN('34567-890-12345-6')">Re-open</button>
+                        </div>
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 45678-901-23456-7</span>
+                            <button class="reopen-btn" onclick="reopenDLN('45678-901-23456-7')">Re-open</button>
+                        </div>
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 56789-012-34567-8</span>
+                            <button class="reopen-btn" onclick="reopenDLN('56789-012-34567-8')">Re-open</button>
+                        </div>
+                        <div class="dln-item">
+                            <span class="dln-number">DLN: 67890-123-45678-9</span>
+                            <button class="reopen-btn" onclick="reopenDLN('67890-123-45678-9')">Re-open</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-view">
+                    <div class="dln-table-container">
+                        <div class="table-wrapper">
+                            <table class="dln-table">
+                                <thead>
+                                    <tr>
+                                        <th>DLN Number</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dlnTableBody">
+                                <tr>
+                                    <td class="dln-number-cell">12345-678-90123-4</td>
+                                    <td class="status-cell status-resolved">Resolved</td>
+                                    <td>2025-09-14 14:30</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('12345-678-90123-4')">Re-open</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dln-number-cell">23456-789-01234-5</td>
+                                    <td class="status-cell status-resolved">Resolved</td>
+                                    <td>2025-09-14 13:45</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('23456-789-01234-5')">Re-open</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dln-number-cell">34567-890-12345-6</td>
+                                    <td class="status-cell status-pending">Suspended</td>
+                                    <td>2025-09-14 12:20</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('34567-890-12345-6')">Re-open</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dln-number-cell">45678-901-23456-7</td>
+                                    <td class="status-cell status-resolved">Resolved</td>
+                                    <td>2025-09-14 11:15</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('45678-901-23456-7')">Re-open</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dln-number-cell">56789-012-34567-8</td>
+                                    <td class="status-cell status-resolved">Resolved</td>
+                                    <td>2025-09-14 10:30</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('56789-012-34567-8')">Re-open</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="dln-number-cell">67890-123-45678-9</td>
+                                    <td class="status-cell status-pending">Suspended</td>
+                                    <td>2025-09-14 09:45</td>
+                                    <td class="action-cell">
+                                        <button class="reopen-btn" onclick="reopenDLN('67890-123-45678-9')">Re-open</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            <div class="pagination-info">
+                                Showing 1-6 of 247 DLNs
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="pagination-btn" disabled>Previous</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">2</button>
+                                <button class="pagination-btn">3</button>
+                                <button class="pagination-btn">...</button>
+                                <button class="pagination-btn">42</button>
+                                <button class="pagination-btn">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function currentDate() {
+            const date = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateElement = document.querySelector('#currentDate');
+            if (dateElement) {
+                dateElement.textContent = currentDate();
+                console.log('Date set to:', currentDate());
+            }
+        });
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userMenuBtn = document.querySelector('.user-menu-btn');
+            
+            if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.remove('show');
+            }
+        });
+
+        // Switch between grid and table view
+        function switchView(viewType) {
+            const gridView = document.querySelector('.grid-view');
+            const tableView = document.querySelector('.table-view');
+            const gridBtn = document.querySelector('.view-btn:first-child');
+            const tableBtn = document.querySelector('.view-btn:last-child');
+
+            if (viewType === 'grid') {
+                gridView.style.display = 'block';
+                tableView.style.display = 'none';
+                gridBtn.classList.add('active');
+                tableBtn.classList.remove('active');
+            } else {
+                gridView.style.display = 'none';
+                tableView.style.display = 'block';
+                gridBtn.classList.remove('active');
+                tableBtn.classList.add('active');
+            }
+        }
+
+        // Filter programs by search term
+        function filterPrograms() {
+            const searchTerm = document.getElementById('programSearch').value.toLowerCase();
+            const programCards = document.querySelectorAll('.program-card');
+
+            programCards.forEach(card => {
+                const programName = card.querySelector('.program-number').textContent.toLowerCase();
+                if (programName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Select program and update details view
+        function selectProgram(programCode) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.program-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            event.target.closest('.program-card').classList.add('selected');
+
+            // Update details view
+            const programBadge = document.querySelector('.program-badge');
+            programBadge.textContent = `Program: ${programCode}`;
+
+            // Update details header to show selected program
+            const detailsTitle = document.querySelector('.details-section .section-title');
+            // detailsTitle.textContent = `Details View - ${programCode}`;
+
+            // You can add more logic here to load specific DLN data for the selected program
+            console.log(`Selected program: ${programCode}`);
+        }
+
+        // Filter DLN numbers
+        function filterDLNs() {
+            const searchTerm = document.getElementById('dlnSearch').value.toLowerCase();
+            const dlnItems = document.querySelectorAll('.dln-item');
+            const tableRows = document.querySelectorAll('#dlnTableBody tr');
+
+            // Filter grid view
+            dlnItems.forEach(item => {
+                const dlnNumber = item.querySelector('.dln-number').textContent.toLowerCase();
+                if (dlnNumber.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Filter table view
+            tableRows.forEach(row => {
+                const dlnNumber = row.querySelector('.dln-number-cell').textContent.toLowerCase();
+                if (dlnNumber.includes(searchTerm)) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Reopen DLN
+        function reopenDLN(dlnNumber) {
+            alert(`Reopening DLN: ${dlnNumber}`);
+            // Add actual reopen logic here
+        }
+    </script>
+</body>
+</html>

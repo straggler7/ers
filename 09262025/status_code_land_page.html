@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRS Error Resolution Application - Status Code</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003d6b 0%, #0066cc 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .user-menu-dropdown.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+            color: #003d6b;
+        }
+
+        .user-menu-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            margin: 0 auto;
+            height: calc(100vh - 80px);
+            max-width: 1200px;
+        }
+
+        .top-toolbar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f3f4;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .toolbar-center {
+            flex: 1;
+            text-align: left;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #212529;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .content-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: fit-content;
+            width: 100%;
+            max-width: 650px;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .welcome-title {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #003d6b;
+            margin-bottom: 0.75rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .search-section {
+            width: 100%;
+            max-width: 520px;
+            margin-bottom: 1.25rem;
+        }
+
+        .dln-search-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 0.875rem 1.125rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            transition: all 0.15s ease;
+            background: #fafafa;
+            color: #374151;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .form-input:hover {
+            border-color: #adb5bd;
+        }
+
+        .form-input.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .search-btn {
+            min-width: 120px;
+            white-space: nowrap;
+            height: auto;
+            align-self: stretch;
+        }
+
+        .help-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .section-divider {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1.75rem 0;
+            position: relative;
+        }
+
+        .section-divider::before {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+            margin-right: 1rem;
+        }
+
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+            margin-left: 1rem;
+        }
+
+        .section-divider .divider-text {
+            background: white;
+            padding: 0 0.5rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .selection-form {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+            flex: 1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            transition: all 0.15s ease;
+            background: #fafafa;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .form-select:hover {
+            border-color: #adb5bd;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+            padding: 0.875rem 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            min-width: 180px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0052a3;
+            border-color: #0052a3;
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-primary:disabled {
+            background-color: #9ca3af;
+            border-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .action-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .action-section .btn {
+            min-width: 180px;
+        }
+
+        .action-section .divider-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .action-section .divider-text::before,
+        .action-section .divider-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 60px;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .action-section .divider-text::before {
+            right: 100%;
+            margin-right: 1rem;
+        }
+
+        .action-section .divider-text::after {
+            left: 100%;
+            margin-left: 1rem;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+            color: #374151;
+            border-color: #9ca3af;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+                margin: 0 0.5rem;
+            }
+            
+            .search-input-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .search-btn {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>IRS Error Resolution Application</h1>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Sarah Thompson</div>
+                    <div class="user-role">Tax Examiner</div>
+                </div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenu">
+                        <a href="summary_page.html" class="user-menu-item">Daily Summary</a>
+                        <a href="#" class="user-menu-item">Profile Settings</a>
+                        <a href="#" class="user-menu-item">Change Password</a>
+                        <hr class="user-menu-divider">
+                        <a href="#" class="user-menu-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="content-layout">
+            <div class="main-content">
+                <div class="content-wrapper">
+                    <div class="welcome-section">
+                        <h1 class="welcome-title">Welcome to ERA</h1>
+                        <p class="welcome-subtitle">
+                            Search by DLN number or select your program/status code and service center to begin error resolution processing.
+                        </p>
+                    </div>
+
+                    <!-- DLN Search Section -->
+                    <div class="search-section">
+                        <form class="dln-search-form" onsubmit="handleDLNSearch(event)">
+                            <div class="form-group">
+                                <label class="form-label" for="dlnInput">DLN Search</label>
+                                <div class="search-input-group">
+                                    <input 
+                                        type="text" 
+                                        class="form-input" 
+                                        id="dlnInput" 
+                                        name="dln" 
+                                        placeholder="Enter DLN number"
+                                        maxlength="20"
+                                    />
+                                    <button type="submit" class="btn btn-primary search-btn">
+                                        Search
+                                    </button>
+                                </div>
+                                <div class="error-message" id="dlnError">Please enter a valid 17-digit DLN number.</div>
+                                <div class="help-text">Enter DLN to search for specific records.</div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="section-divider">
+                        <span class="divider-text">select program code or status code</span>
+                    </div>
+
+                    <form class="selection-form" onsubmit="handleSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="programSelect">Program Selection</label>
+                                <select class="form-select" id="programSelect" name="program">
+                                    <option value="">Select a program...</option>
+                                    <option value="form-4868">ISRP</option>
+                                    <option value="form-1040">GMF</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="statusCodeSelect">Status Code</label>
+                                <select class="form-select" id="statusCodeSelect" name="statusCode">
+                                    <option value="">Select a status code...</option>
+                                    <option value="224">Status Code 224</option>
+                                    <option value="225">Status Code 225</option>
+                                    <option value="226">Status Code 226</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="error-message" id="programStatusError">Please select a program or status code.</div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="serviceCenterSelect">Service Center</label>
+                            <select class="form-select" id="serviceCenterSelect" name="serviceCenter" required>
+                                <option value="">Select a service center...</option>
+                                <option selected value="austin">Austin (Default)</option>
+                                <option value="ogden">Ogden</option>
+                                <option value="charlotte">Charlotte</option>
+                            </select>
+                            <div class="error-message" id="serviceCenterError">Please select a service center.</div>
+                        </div>
+
+                        <div class="action-section">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                Continue to Details
+                            </button>
+                            <div class="divider-text">or</div>
+                            <a href="summary_page.html" class="btn btn-outline">
+                                View Daily Summary
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userMenuBtn = document.querySelector('.user-menu-btn');
+            
+            if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.remove('show');
+            }
+        });
+
+        function validateForm() {
+            const programSelect = document.getElementById('programSelect');
+            const statusCodeSelect = document.getElementById('statusCodeSelect');
+            const serviceCenterSelect = document.getElementById('serviceCenterSelect');
+            const programStatusError = document.getElementById('programStatusError');
+            const serviceCenterError = document.getElementById('serviceCenterError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            let isValid = true;
+
+            // Reset error messages
+            programStatusError.style.display = 'none';
+            serviceCenterError.style.display = 'none';
+
+            // Validate that either program or status code is selected
+            const hasProgram = programSelect.value;
+            const hasStatusCode = statusCodeSelect.value;
+            
+            if (!hasProgram && !hasStatusCode) {
+                programStatusError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate service center selection
+            if (!serviceCenterSelect.value) {
+                serviceCenterError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Enable/disable submit button
+            submitBtn.disabled = !isValid;
+
+            return isValid;
+        }
+
+        function validateDLN(dln) {
+            // Remove any non-digit characters
+            const cleanDLN = dln.replace(/\D/g, '');
+            
+            // Check if it's exactly 17 digits
+            return cleanDLN.length === 17 && /^\d{17}$/.test(cleanDLN);
+        }
+
+        function handleDLNSearch(event) {
+            event.preventDefault();
+            
+            const dlnInput = document.getElementById('dlnInput');
+            const dlnError = document.getElementById('dlnError');
+            const dlnValue = dlnInput.value.trim();
+            
+            // Reset error state
+            dlnError.style.display = 'none';
+            dlnInput.classList.remove('error');
+            
+            if (!dlnValue) {
+                dlnError.textContent = 'Please enter a DLN number.';
+                dlnError.style.display = 'block';
+                dlnInput.classList.add('error');
+                dlnInput.focus();
+                return;
+            }
+            
+            if (!validateDLN(dlnValue)) {
+                dlnError.textContent = 'Please enter a valid 17-digit DLN number.';
+                dlnError.style.display = 'block';
+                dlnInput.classList.add('error');
+                dlnInput.focus();
+                return;
+            }
+            
+            // Store DLN in sessionStorage for use on details page
+            sessionStorage.setItem('searchDLN', dlnValue.replace(/\D/g, ''));
+            sessionStorage.setItem('searchType', 'dln');
+            
+            // Navigate to details page
+            window.location.href = 'details_page.html';
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            if (validateForm()) {
+                const programSelect = document.getElementById('programSelect');
+                const statusCodeSelect = document.getElementById('statusCodeSelect');
+                const serviceCenterSelect = document.getElementById('serviceCenterSelect');
+                
+                // Store selections in sessionStorage for use on details page
+                if (programSelect.value) {
+                    sessionStorage.setItem('selectedProgram', programSelect.value);
+                    sessionStorage.setItem('searchType', 'program');
+                }
+                if (statusCodeSelect.value) {
+                    sessionStorage.setItem('selectedStatusCode', statusCodeSelect.value);
+                    sessionStorage.setItem('searchType', 'statusCode');
+                }
+                sessionStorage.setItem('selectedServiceCenter', serviceCenterSelect.value);
+                
+                // Navigate to details page
+                window.location.href = 'details_page.html';
+            }
+        }
+
+        // Add real-time validation for DLN input
+        function validateDLNInput() {
+            const dlnInput = document.getElementById('dlnInput');
+            const dlnError = document.getElementById('dlnError');
+            const dlnValue = dlnInput.value.trim();
+            
+            // Reset error state
+            dlnError.style.display = 'none';
+            dlnInput.classList.remove('error');
+            
+            // Only validate if there's input
+            if (dlnValue && !validateDLN(dlnValue)) {
+                dlnError.textContent = 'DLN must be exactly 17 digits.';
+                dlnError.style.display = 'block';
+                dlnInput.classList.add('error');
+            }
+        }
+
+        // Add real-time validation
+        document.getElementById('programSelect').addEventListener('change', validateForm);
+        document.getElementById('statusCodeSelect').addEventListener('change', validateForm);
+        document.getElementById('serviceCenterSelect').addEventListener('change', validateForm);
+        document.getElementById('dlnInput').addEventListener('input', validateDLNInput);
+
+        // Initial validation check
+        document.addEventListener('DOMContentLoaded', function() {
+            validateForm();
+        });
+    </script>
+</body>
+</html>
